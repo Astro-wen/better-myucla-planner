@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Better MyUCLA Demo</title>
+    <link rel="stylesheet" href="content.css" />
+  </head>
+  <body class="pl-demo-page">
+    <header class="pl-demo-hero">
+      <div>
+        <span class="pl-eyebrow">SAFE FIXTURE · NO UCLA ACCOUNT</span>
+        <h1>Better MyUCLA Reordering Demo</h1>
+        <p>
+          Below are 12 made-up classes. Every move clicks the card's own up/down button, and the
+          page redraws the whole card the way MyUCLA does.
+        </p>
+      </div>
+      <div class="pl-demo-badge">Demo data only</div>
+    </header>
+
+    <main class="pl-demo-shell">
+      <section class="pl-native-panel" aria-labelledby="native-heading">
+        <div class="pl-native-heading-row">
+          <div>
+            <span class="pl-eyebrow">SIMULATED CLASS PLANNER</span>
+            <h2 id="native-heading">Fall 2026 · Main Plan</h2>
+          </div>
+          <p>The page's own buttons stay. The extension never moves the class elements itself.</p>
+        </div>
+        <div
+          id="fixture-course-list"
+          data-bf-profile="fixture-v1"
+          data-bf-course-list
+          data-bf-term="2026F"
+          data-bf-plan="main"
+          aria-label="Planned courses"
+        ></div>
+      </section>
+    </main>
+
+    <div id="demo-live-region" class="pl-visually-hidden" aria-live="polite"></div>
+    <script src="demo.js"></script>
+  </body>
+</html>

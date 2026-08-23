@@ -1,0 +1,919 @@
+/* Better MyUCLA — injected UI.
+   Tokens are read off the live Class Planner so the injected controls read as
+   part of MyUCLA rather than as a strip bolted on top of it. Measured on the
+   real page: section title bars are #2C5E91 with a 7px radius, course titles
+   are #0055A6, table body cells are #E6F1F7, and the whole page is
+   ProximaNova/Verdana. UCLA gold is used for exactly one thing — the single
+   action that is waiting on the student. */
+
+.pl-bar,
+.pl-actionbar,
+.pl-card-tools,
+.pl-tag-badge,
+.pl-status-badge,
+.pl-conflict-badge,
+.pl-topbar,
+.pl-jump,
+.pl-plan-root {
+  --pl-font: ProximaNova, Verdana, sans-serif;
+  --pl-blue: #0055a6;
+  --pl-blue-dark: #2c5e91;
+  --pl-link: #073198;
+  --pl-button: #204e91;
+  --pl-gold: #ffd100;
+  --pl-ink: #4e4e4e;
+  --pl-muted: #7b8794;
+  --pl-cell: #e6f1f7;
+  --pl-line: #c9dceb;
+  --pl-line-soft: #e2ecf4;
+  --pl-surface: #ffffff;
+  --pl-warn: #8a5b00;
+  --pl-warn-bg: #fdf1d6;
+  --pl-danger: #a42834;
+  --pl-radius: 7px;
+  box-sizing: border-box;
+  color: var(--pl-ink);
+  font-family: var(--pl-font);
+  font-size: 13px;
+}
+
+.pl-bar *,
+.pl-actionbar *,
+.pl-card-tools *,
+.pl-jump * {
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+/* The token block must not restyle MyUCLA's own course text. */
+.pl-plan-root {
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* ----------------------------------------------------------------- toolbar
+   MyUCLA parks a section's own actions on the right of its blue title bar —
+   "Find a Class and Enroll" lives there on the search section. Riding in the
+   "Class Plan" bar is the placement that reads as native, so the host bar
+   becomes a flex row and our controls take the right end of it.             */
+
+.classPlanner_SectionTitle.pl-host-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+}
+
+.pl-bar.pl-in-section {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* Fallback placement, used only if MyUCLA drops that title bar. */
+.pl-bar:not(.pl-in-section) {
+  position: relative;
+  margin: 0 0 6px;
+  padding: 2px 0 6px;
+  border-bottom: 1px solid var(--pl-line-soft);
+  background: transparent;
+}
+
+.pl-bar-main {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.pl-count {
+  color: var(--pl-muted);
+  font-size: 11.5px;
+  white-space: nowrap;
+}
+
+.pl-count[hidden] { display: none; }
+.pl-count.pl-no-match { color: var(--pl-danger); }
+
+/* -------------------------------------------------------- unsaved changes
+   The one thing actually waiting on the student, so it follows them down the
+   page instead of sitting in a header they scrolled past four classes ago.  */
+
+.pl-actionbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  z-index: 2147481000;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 14px;
+  border-top: 1px solid var(--pl-line);
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 -2px 12px rgba(20, 50, 80, 0.12);
+}
+
+.pl-actionbar[hidden] { display: none; }
+
+/* The last class in the plan must not hide behind the bar. */
+html.pl-has-actionbar body { padding-bottom: 56px; }
+
+.pl-actionbar .pl-feed {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  flex: 0 1 420px;
+}
+
+.pl-dirty {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 2px 2px 2px 9px;
+  border: 1px solid var(--pl-blue);
+  border-radius: 999px;
+  background: var(--pl-surface);
+}
+
+.pl-dirty[hidden] { display: none; }
+
+.pl-dirty-text {
+  color: var(--pl-blue-dark);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.pl-dirty-text.pl-urgent { color: var(--pl-danger); font-weight: 600; }
+
+/* An offer, not a pending action, so it sits quieter than the save pill. */
+.pl-draft { border-color: var(--pl-line); }
+.pl-draft .pl-dirty-text { color: var(--pl-muted); }
+
+.pl-dirty button {
+  height: 24px;
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+}
+
+/* --------------------------------------------------------------- controls */
+
+.pl-bar input.pl-search {
+  box-sizing: border-box;
+  width: 148px;
+  height: 23px;
+  margin: 0;
+  padding: 2px 8px;
+  line-height: 17px;
+  border: 1px solid var(--pl-line);
+  border-radius: 4px;
+  background: var(--pl-surface);
+  color: var(--pl-ink);
+  font-size: 12.5px;
+}
+
+.pl-bar input.pl-search::placeholder { color: #9fb0c0; }
+
+.pl-bar input.pl-search:focus {
+  border-color: var(--pl-blue);
+  outline: none;
+}
+
+.pl-bar button,
+.pl-actionbar button,
+.pl-card-tools button {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--pl-button);
+  font-size: 12.5px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pl-ghost {
+  height: 23px;
+  padding: 3px 9px;
+  border-color: var(--pl-line) !important;
+  background: var(--pl-surface);
+}
+
+.pl-ghost:hover { border-color: var(--pl-blue) !important; color: var(--pl-blue); }
+
+.pl-ghost.pl-on {
+  border-color: var(--pl-blue) !important;
+  background: var(--pl-blue);
+  color: #fff;
+}
+
+.pl-solid {
+  height: 23px;
+  padding: 3px 12px;
+  border-color: var(--pl-blue) !important;
+  background: var(--pl-blue);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pl-solid:hover { background: var(--pl-blue-dark); border-color: var(--pl-blue-dark) !important; }
+
+/* ------------------------------------------------- controls on the blue bar
+   Inside MyUCLA's own title bar the background is #2C5E91, so the same
+   controls need the inverse treatment. Gold is reserved for Save: on this
+   background it is the one thing that should catch the eye.                */
+
+.pl-in-section .pl-count { color: #cfe0ef; }
+.pl-in-section .pl-count.pl-no-match { color: var(--pl-gold); }
+
+.pl-in-section .pl-ghost {
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  background: transparent;
+  color: #fff;
+}
+
+.pl-in-section .pl-ghost:hover {
+  border-color: #fff !important;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.pl-in-section .pl-icon { color: #fff; }
+.pl-in-section .pl-icon:hover { background: rgba(255, 255, 255, 0.16); color: #fff; }
+
+
+.pl-bar button:focus-visible,
+.pl-actionbar button:focus-visible,
+.pl-card-tools button:focus-visible,
+.pl-card-tools select:focus-visible,
+.pl-card-tools input:focus-visible {
+  outline: 2px solid var(--pl-blue);
+  outline-offset: 1px;
+}
+
+.pl-in-section button:focus-visible,
+.pl-in-section input:focus-visible {
+  outline: 2px solid var(--pl-gold);
+  outline-offset: 1px;
+}
+
+.pl-bar button:disabled,
+.pl-actionbar button:disabled,
+.pl-card-tools button:disabled,
+.pl-card-tools select:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.pl-icon {
+  width: 23px;
+  height: 23px;
+  padding: 0;
+  color: var(--pl-button);
+}
+
+.pl-icon:hover { background: var(--pl-cell); color: var(--pl-blue); }
+.pl-icon.pl-on { color: var(--pl-blue); }
+
+.pl-icon > span,
+.pl-grip > span { font-size: 14px; line-height: 1; }
+
+/* ------------------------------------------------------------------- menu */
+
+.pl-menu-wrap { position: relative; }
+
+.pl-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 30;
+  width: 250px;
+  padding: 9px;
+  border: 1px solid var(--pl-line);
+  border-radius: var(--pl-radius);
+  background: var(--pl-surface);
+  box-shadow: 0 6px 18px rgba(20, 50, 80, 0.24);
+  text-align: left;
+}
+
+.pl-menu[hidden] { display: none; }
+
+.pl-menu-note {
+  margin: 0 0 7px;
+  color: var(--pl-muted);
+  font-size: 11.5px;
+  line-height: 1.5;
+}
+
+.pl-menu-item {
+  width: 100%;
+  height: 26px;
+  padding: 4px 8px;
+  justify-content: flex-start !important;
+  border-color: var(--pl-line) !important;
+  color: var(--pl-button) !important;
+  background: var(--pl-surface) !important;
+}
+
+.pl-menu-item:hover { background: var(--pl-cell) !important; color: var(--pl-danger) !important; }
+
+.pl-menu-link {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  border: 1px solid var(--pl-line);
+  border-radius: 4px;
+  color: var(--pl-button);
+  font-size: 12.5px;
+  text-decoration: none;
+}
+
+.pl-menu-link:hover { background: var(--pl-cell); color: var(--pl-blue); }
+
+/* ------------------------------------------------------------ status feed */
+
+.pl-feed {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: 1px solid var(--pl-line-soft);
+}
+
+.pl-feed[hidden] { display: none; }
+
+.pl-status {
+  overflow: hidden;
+  flex: 1 1 auto;
+  color: var(--pl-muted);
+  font-size: 11.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pl-status[data-kind="running"] { color: var(--pl-blue); }
+.pl-status[data-kind="success"] { color: #1f7a55; }
+.pl-status[data-kind="warning"] { color: var(--pl-warn); }
+.pl-status[data-kind="error"] { color: var(--pl-danger); font-weight: 600; }
+
+.pl-stop[hidden] { display: none; }
+.pl-reload[hidden] { display: none; }
+
+/* ------------------------------------------------------- per-course tools
+   `td.linkPanelRight` is ~300px wide and MyUCLA's own colour swatch and
+   up/down arrows only use ~73px of it, so our controls sit on the same line
+   instead of starting a second row of icons underneath.                    */
+
+.pl-card-tools.pl-real-tools {
+  display: inline-block;
+  width: auto;
+  margin: 0 0 0 6px;
+  text-align: right;
+  vertical-align: top;
+}
+
+.pl-rail {
+  display: flex;
+  gap: 1px;
+  align-items: center;
+  justify-content: flex-end;
+  height: 23px;
+}
+
+/* A hairline between MyUCLA's ordering controls and ours, so it is obvious
+   which buttons belong to the page and which were added. */
+.pl-rail::before {
+  width: 1px;
+  height: 15px;
+  margin-right: 6px;
+  background: var(--pl-line);
+  content: "";
+}
+
+.pl-grip {
+  width: 22px;
+  height: 23px;
+  padding: 0;
+  color: #a9bccd;
+  cursor: grab;
+  touch-action: none;
+}
+
+.pl-grip:hover { color: var(--pl-blue); background: var(--pl-cell); }
+.pl-grip:active { cursor: grabbing; }
+.pl-grip:disabled { cursor: not-allowed; }
+
+/* The position control. A bare number reads as a label, so it gets a caret
+   and hover affordance to say it opens. */
+.pl-card-tools select.pl-pos {
+  box-sizing: border-box;
+  width: 54px;
+  min-width: 54px;
+  height: 23px;
+  margin: 0 3px;
+  padding: 0 15px 0 5px;
+  line-height: 21px;
+  border: 1px solid var(--pl-line);
+  border-radius: 4px;
+  background-color: var(--pl-surface);
+  background-image: linear-gradient(45deg, transparent 50%, #6d8299 50%),
+    linear-gradient(135deg, #6d8299 50%, transparent 50%);
+  background-position: calc(100% - 10px) 10px, calc(100% - 6px) 10px;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+  color: var(--pl-blue-dark);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  text-align-last: left;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.pl-card-tools select.pl-pos:hover {
+  border-color: var(--pl-blue);
+  background-color: var(--pl-cell);
+}
+
+.pl-chevron > span { display: inline-block; transition: transform 0.18s ease; }
+.pl-chevron.pl-flipped > span { transform: rotate(-180deg); }
+
+/* ---------------------------------------------------------------- tagging */
+
+.pl-tag-editor {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.pl-tag-editor[hidden] { display: none; }
+
+.pl-card-tools .pl-tag-editor input {
+  box-sizing: border-box;
+  width: 210px;
+  height: 24px;
+  margin: 0;
+  padding: 3px 8px;
+  line-height: 18px;
+  border: 1px solid var(--pl-line);
+  border-radius: 4px;
+  background: var(--pl-surface);
+  color: var(--pl-ink);
+  font-size: 12.5px;
+}
+
+.pl-card-tools .pl-tag-editor input:focus { border-color: var(--pl-blue); outline: none; }
+
+.pl-tag-badge {
+  display: none;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--pl-cell);
+  color: var(--pl-blue-dark);
+  font-size: 10.5px;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.pl-tag-badge:not(:empty) { display: inline-block; }
+
+/* Collapsing must not cost the one fact the student came for. */
+.pl-status-badge {
+  display: none;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-family: var(--pl-font);
+  font-size: 10.5px;
+  font-weight: 600;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.pl-plan-root tbody.courseItem.pl-course-collapsed .pl-status-badge {
+  display: inline-block;
+}
+
+.pl-status-badge[data-tone="open"] { background: #e4f4ec; color: #1a6b4a; }
+.pl-status-badge[data-tone="mixed"] { background: #e6f1f7; color: #205a86; }
+.pl-status-badge[data-tone="enrolled"] { background: #e6f1f7; color: #205a86; }
+.pl-status-badge[data-tone="waitlist"] { background: #fdf1d6; color: #8a5b00; }
+.pl-status-badge[data-tone="closed"] { background: #fbe9ea; color: #99242f; }
+.pl-status-badge[data-tone="conflict"] { background: #fdf1d6; color: #8a5b00; }
+
+/* MyUCLA's own answer to "what does this clash with", shown without a click. */
+.pl-conflict-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #fdf1d6;
+  color: #8a5b00;
+  font-family: var(--pl-font);
+  font-size: 10.5px;
+  font-weight: 600;
+  vertical-align: middle;
+  cursor: help;
+}
+
+/* ------------------------------------------------------------- headline
+   MyUCLA prints "Class 15: Management" and "170 - Real Estate Finance and
+   Investments" as two paragraphs, which splits the one string a student scans
+   for across two lines with the title wedged between its halves. The original
+   paragraphs are hidden rather than rewritten, so MyUCLA's own text stays
+   intact underneath.                                                        */
+
+.pl-titled > p:not([data-pl-headline]) { display: none !important; }
+
+p.pl-headline {
+  margin: 0 0 2px !important;
+  line-height: 1.3;
+}
+
+.pl-headline .pl-code {
+  color: var(--pl-blue);
+  font-family: var(--pl-font);
+  font-size: 15.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pl-headline .pl-course-title {
+  margin-left: 9px;
+  color: var(--pl-ink);
+  font-family: var(--pl-font);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+/* ------------------------------------------------------- section headers
+   Nine column labels, reprinted once per class: 144 header cells on a
+   sixteen-class plan. Only the first class the student can see keeps its
+   header, and that one is a caption rather than a band.                    */
+
+.pl-plan-root tbody.courseItem:not(.pl-lead-card) tr.pl-thead {
+  display: none !important;
+}
+
+.pl-plan-root tbody.courseItem.pl-lead-card tr.pl-thead > th {
+  padding-top: 1px !important;
+  padding-bottom: 3px !important;
+  border-bottom: 1px solid var(--pl-line);
+  background: transparent !important;
+  color: var(--pl-muted) !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Sixteen separate tables meant sixteen different column grids, so the Time
+   column moved by eighty pixels from one class to the next. Fixed layout with
+   shared widths makes the list read as one table. Applied only to the exact
+   nine-column shape recorded in the contract. */
+
+.pl-plan-root table.coursetable.pl-cols-9 {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(1),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(1) { width: 4%; }
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(2),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(2) { width: 7%; }
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(3),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(3) { width: 17%; }
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(4),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(4) { width: 4%; }
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(5),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(5) { width: 6%; }
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(6),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(6) { width: 12%; }
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(7),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(7) { width: 18%; }
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(8),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(8) { width: 5%; }
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > th:nth-child(9),
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td:nth-child(9) { width: 27%; }
+
+/* Fixed layout clips instead of expanding, so long values have to wrap. */
+.pl-plan-root table.coursetable.pl-cols-9 > tbody > tr > td {
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------- weekly grid
+   MyUCLA's own grid. Each meeting is an absolutely positioned box at
+   `overflow: hidden`, as short as 48px, holding three lines of 14px text
+   separated by <br>. A long room name wraps and is cut in half by the bottom
+   edge. Each run becomes one line that ends in an ellipsis instead, and the
+   full string moves to the title attribute.
+
+   The <br> and .hide-above-small pair is MyUCLA's responsive switch, so this
+   only applies above their breakpoint; narrow screens keep their layout.     */
+
+@media (min-width: 781px) {
+  #gridDiv .planneritembox[data-pl-grid="tidy"] {
+    padding: 2px 4px;
+    font-size: 11px;
+    line-height: 1.22;
+    text-align: left;
+  }
+
+  #gridDiv .planneritembox[data-pl-grid="tidy"] > br,
+  #gridDiv .planneritembox[data-pl-grid="tidy"] > .hide-above-small { display: none; }
+
+  #gridDiv .planneritembox[data-pl-grid="tidy"] .pl-gridline {
+    display: block;
+    overflow: hidden;
+    color: #33475b;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #gridDiv .planneritembox[data-pl-grid="tidy"] .pl-gridline[data-pl-gridline="0"] {
+    color: #12293f;
+    font-weight: 700;
+  }
+
+  /* The conflict marker belongs in a corner, not in the middle of the text. */
+  #gridDiv .planneritembox[data-pl-grid="tidy"] > .planConflict {
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    z-index: 1;
+  }
+}
+
+/* ------------------------------------------------------ course card shell
+   A Class Planner course is one <tbody> of three rows:
+     row 1: td.SubjectAreaName_ClassName + td.linkPanelRight[rowspan=2]
+     row 2: a single td under the title
+     row 3: a single td[colspan=2] holding the section table
+   The card outline therefore has to follow those specific cells.            */
+
+.pl-plan-root {
+  border-collapse: separate !important;
+  border-spacing: 0 8px !important;
+}
+
+.pl-plan-root > tbody.course_divider { display: none !important; }
+
+.pl-plan-root > tbody.courseItem {
+  transition: transform 0.2s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.pl-plan-root > tbody.courseItem > tr > td {
+  background-color: var(--pl-surface);
+}
+
+.pl-plan-root > tbody.courseItem > tr > td:first-child {
+  border-left: 1px solid var(--pl-line);
+  padding-left: 10px !important;
+}
+
+.pl-plan-root > tbody.courseItem > tr:first-child > td {
+  border-top: 1px solid var(--pl-line);
+  padding-top: 8px !important;
+}
+
+.pl-plan-root > tbody.courseItem > tr:first-child > td.linkPanelRight,
+.pl-plan-root > tbody.courseItem > tr:last-child > td {
+  border-right: 1px solid var(--pl-line);
+  padding-right: 10px !important;
+}
+
+.pl-plan-root > tbody.courseItem > tr:last-child > td {
+  border-bottom: 1px solid var(--pl-line);
+  padding-bottom: 8px !important;
+}
+
+.pl-plan-root > tbody.courseItem > tr:first-child > td:first-child {
+  border-top-left-radius: var(--pl-radius);
+}
+
+.pl-plan-root > tbody.courseItem > tr:first-child > td.linkPanelRight {
+  border-top-right-radius: var(--pl-radius);
+}
+
+.pl-plan-root > tbody.courseItem > tr:last-child > td {
+  border-bottom-left-radius: var(--pl-radius);
+  border-bottom-right-radius: var(--pl-radius);
+}
+
+/* ------------------------------------------------------------ moved cards
+   A card is roughly a quarter of the viewport, so most moves send it off
+   screen. The page is never scrolled for the student; instead the card that
+   landed gets a brief highlight, and if it landed out of sight a chip says
+   where it went.                                                            */
+
+.pl-plan-root > tbody.courseItem.pl-just-moved > tr > td {
+  animation: pl-land 1.3s ease-out;
+}
+
+@keyframes pl-land {
+  0% { background-color: #fff6d1; }
+  20% { background-color: #fff6d1; }
+  100% { background-color: var(--pl-surface); }
+}
+
+.pl-jump {
+  position: fixed;
+  left: 50%;
+  z-index: 2147482000;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px 6px 12px;
+  border: 1px solid var(--pl-blue-dark);
+  border-radius: 999px;
+  background: var(--pl-blue-dark);
+  color: #fff;
+  font-family: var(--pl-font);
+  font-size: 12.5px;
+  box-shadow: 0 4px 16px rgba(15, 40, 70, 0.3);
+}
+
+.pl-jump-up { top: 14px; animation: pl-jump-in-top 0.22s ease-out; }
+.pl-jump-down { bottom: 14px; animation: pl-jump-in-bottom 0.22s ease-out; }
+/* Never land on top of the save bar. */
+html.pl-has-actionbar .pl-jump-down { bottom: 58px; }
+
+@keyframes pl-jump-in-top {
+  from { transform: translate(-50%, -18px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+@keyframes pl-jump-in-bottom {
+  from { transform: translate(-50%, 18px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.pl-jump-up,
+.pl-jump-down { transform: translateX(-50%); }
+
+.pl-jump-arrow { color: var(--pl-gold); font-size: 13px; }
+
+.pl-jump-text {
+  max-width: 42vw;
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pl-jump button.pl-jump-action {
+  height: 22px;
+  margin: 0;
+  padding: 3px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pl-jump button.pl-jump-action:hover {
+  border-color: var(--pl-gold);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.pl-jump button.pl-jump-action:focus-visible {
+  outline: 2px solid var(--pl-gold);
+  outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------- dragging */
+
+.pl-plan-root.pl-dragging { user-select: none; }
+
+.pl-plan-root.pl-dragging > tbody.courseItem.pl-drag-active { transition: none; }
+
+.pl-plan-root.pl-dragging > tbody.courseItem.pl-drag-active > tr > td {
+  border-color: var(--pl-blue) !important;
+  background-color: #f4f9fd;
+}
+
+/* A picked-up card should read as lifted. A tbody cannot take one shadow, so
+   the top and bottom rows carry the two halves of it. */
+.pl-plan-root.pl-dragging > tbody.courseItem.pl-drag-active > tr:first-child > td {
+  box-shadow: 0 -4px 12px -5px rgba(15, 45, 80, 0.45);
+}
+
+.pl-plan-root.pl-dragging > tbody.courseItem.pl-drag-active > tr:last-child > td {
+  box-shadow: 0 7px 14px -6px rgba(15, 45, 80, 0.45);
+}
+
+/* Drag over MyUCLA's own blue section bar, not under it. */
+.pl-plan-root.pl-dragging > tbody.courseItem.pl-drag-active {
+  position: relative;
+  z-index: 5;
+}
+
+/* Nothing is dimmed during a drag. A long drag pushes most of the plan, and
+   fading thirteen cards to make one stand out costs more than it buys: the
+   lifted card already reads as lifted, and the gap already shows the target. */
+
+
+.pl-plan-root.pl-syncing .OrderingButtons button.link {
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+/* ------------------------------------------------------------ sync progress
+   Deliberately quiet: a page-load style hairline, not a spinner. Saving order
+   is plumbing, and the student should barely register that it is happening.  */
+
+.pl-topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2147483000;
+  height: 2px;
+  border-radius: 0 2px 2px 0;
+  background: var(--pl-blue);
+  box-shadow: 0 0 6px rgba(0, 85, 166, 0.5);
+  transition: width 0.35s ease, opacity 0.3s ease;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------- quiet reboot
+   After a sync we reload once. Hold the plan area back for a beat so the
+   reload reads as a settle instead of a flash of unstyled rows. The keyframes
+   reveal it even if our script never gets to remove the class.              */
+
+html.pl-boot #ctl00_MainContent_classPlanPanel {
+  animation: pl-boot-reveal 1.5s ease forwards;
+}
+
+@keyframes pl-boot-reveal {
+  0% { opacity: 0; }
+  45% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ------------------------------------------------------------- view modes */
+
+.pl-plan-root tbody.courseItem.pl-filtered-out { display: none !important; }
+
+.pl-plan-root tbody.courseItem.pl-course-collapsed > tr:not(:first-child) {
+  display: none !important;
+}
+
+.pl-plan-root tbody.courseItem.pl-course-collapsed > tr:first-child > td {
+  border-bottom: 1px solid var(--pl-line);
+  padding-bottom: 8px !important;
+}
+
+.pl-plan-root tbody.courseItem.pl-course-collapsed > tr:first-child > td:first-child {
+  border-bottom-left-radius: var(--pl-radius);
+}
+
+.pl-plan-root tbody.courseItem.pl-course-collapsed > tr:first-child > td.linkPanelRight {
+  border-right: 1px solid var(--pl-line);
+  border-bottom-right-radius: var(--pl-radius);
+}
+
+@media (max-width: 860px) {
+  .pl-bar input.pl-search { flex: 1 1 120px; width: auto; }
+  .pl-card-tools.pl-real-tools { display: block; margin: 4px 0 0; }
+  .pl-rail { justify-content: flex-end; }
+  .pl-rail::before { display: none; }
+  .pl-tag-editor { justify-content: flex-start; }
+  .pl-card-tools .pl-tag-editor input { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl-plan-root > tbody.courseItem,
+  .pl-chevron > span,
+  .pl-topbar {
+    transition-duration: 0.01ms !important;
+  }
+
+  .pl-plan-root > tbody.courseItem.pl-just-moved > tr > td,
+  .pl-jump-up,
+  .pl-jump-down {
+    animation-duration: 0.01ms !important;
+  }
+
+  html.pl-boot #ctl00_MainContent_classPlanPanel { animation-duration: 0.01ms !important; }
+}

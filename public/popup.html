@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Better MyUCLA</title>
+    <style>
+      :root {
+        color-scheme: light;
+        /* UCLA's own palette, so the popup reads as part of the same family. */
+        --ucla-blue: #2774ae;
+        --ucla-darker: #005587;
+        --ucla-darkest: #003b5c;
+        --ucla-gold: #ffd100;
+        --ucla-lightest: #daebfe;
+        --ink: #4a4a4a;
+        --muted: #6b7a88;
+        --line: #dbe5ec;
+      }
+
+      body {
+        width: 300px;
+        margin: 0;
+        background: #fff;
+        color: var(--ink);
+        font-family: ProximaNova, "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
+      header {
+        padding: 14px 16px 12px;
+        border-bottom: 3px solid var(--ucla-gold);
+        background: var(--ucla-darker);
+        color: #fff;
+      }
+
+      .row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      .state {
+        margin: 3px 0 0;
+        color: #cfe4f5;
+        font-size: 11.5px;
+      }
+
+      section { padding: 13px 16px; }
+      section + section { border-top: 1px solid var(--line); }
+
+      h2 {
+        margin: 0 0 7px;
+        color: var(--ucla-darkest);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      ul { margin: 0; padding: 0; list-style: none; }
+
+      li {
+        position: relative;
+        margin-bottom: 6px;
+        padding-left: 15px;
+        font-size: 12.5px;
+      }
+
+      li::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        color: var(--ucla-blue);
+        font-weight: 700;
+        content: "›";
+      }
+
+      li:last-child { margin-bottom: 0; }
+
+      .label { font-size: 13px; font-weight: 600; color: var(--ucla-darkest); }
+
+      .note {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 11.5px;
+        line-height: 1.5;
+      }
+
+      .note strong { color: var(--ink); font-weight: 600; }
+
+      .sub {
+        margin-top: 11px;
+        padding-top: 10px;
+        border-top: 1px dashed var(--line);
+      }
+
+      .sub[hidden] { display: none; }
+
+      select {
+        height: 27px;
+        padding: 0 6px;
+        border: 1px solid #b9cede;
+        border-radius: 4px;
+        background: #fff;
+        color: var(--ucla-darker);
+        font-family: inherit;
+        font-size: 12px;
+      }
+
+      select:focus-visible { outline: 2px solid var(--ucla-blue); outline-offset: 1px; }
+
+      footer {
+        padding: 10px 16px 13px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      /* Switch */
+      .switch { position: relative; width: 42px; height: 24px; flex: 0 0 auto; }
+
+      .switch input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      .track {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 999px;
+        background: #b7c4cf;
+        transition: background 0.16s ease;
+        pointer-events: none;
+      }
+
+      .track::after {
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.28);
+        transition: transform 0.16s ease;
+        content: "";
+      }
+
+      header .track { background: rgba(255, 255, 255, 0.32); }
+      header .switch input:checked + .track { background: var(--ucla-gold); }
+      header .switch input:checked + .track::after { transform: translateX(18px); }
+      .switch input:checked + .track { background: var(--ucla-blue); }
+      .switch input:checked + .track::after { transform: translateX(18px); }
+      .switch input:focus-visible + .track { outline: 2px solid var(--ucla-gold); outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="row">
+        <h1>Better MyUCLA</h1>
+        <label class="switch">
+          <input id="toggle" type="checkbox" aria-label="Turn Better MyUCLA on or off" />
+          <span class="track"></span>
+        </label>
+      </div>
+      <p class="state" id="state">Checking…</p>
+    </header>
+
+    <section>
+      <h2>What it adds</h2>
+      <ul>
+        <li>Drag a class anywhere in your plan, or send it to the top in one click. MyUCLA only moves one step per click.</li>
+        <li>Rearrange as much as you like first. Nothing reaches MyUCLA until you press <strong>Save</strong>.</li>
+        <li>Every class shows what it clashes with, without opening a popup for each one.</li>
+        <li>Add your own notes to a class. They stay on this computer.</li>
+      </ul>
+    </section>
+
+    <section>
+      <div class="row">
+        <span class="label">Tidy up MyUCLA's own layout</span>
+        <label class="switch">
+          <input id="tidy" type="checkbox" aria-label="Tidy up MyUCLA's own layout" />
+          <span class="track"></span>
+        </label>
+      </div>
+      <p class="note">
+        Off by default, because this is the page you already know. Turn it on and each class
+        leads with its code (<strong>MGMT 170</strong>), the nine column labels are printed once
+        instead of once per class, and the weekly schedule stops cutting room names in half.
+        Nothing about your plan changes, and switching it back off restores the page instantly.
+      </p>
+    </section>
+
+    <section>
+      <div class="row">
+        <span class="label">Stay signed in while reading</span>
+        <label class="switch">
+          <input id="keep-alive" type="checkbox" aria-label="Stay signed in while reading" />
+          <span class="track"></span>
+        </label>
+      </div>
+      <p class="note">
+        MyUCLA only treats a <strong>click</strong> as proof you are still there. Scrolling and reading
+        do not count, so a long look at your plan can sign you out in the middle of editing.
+        Turn this on and scrolling or moving the mouse counts too.
+      </p>
+      <p class="note">
+        It never runs in a background tab, and it stops the moment you leave the page.
+      </p>
+
+      <div class="row sub" id="cap-row">
+        <span class="label">Stop extending after</span>
+        <select id="cap" aria-label="Stop extending after">
+          <option value="30">30 minutes</option>
+          <option value="60">60 minutes</option>
+          <option value="120">2 hours</option>
+          <option value="0">No limit</option>
+        </select>
+      </div>
+      <p class="note">
+        MyUCLA also has a hard limit of about 4 hours. Nothing can push past that — you will have
+        to sign in again.
+      </p>
+    </section>
+
+    <footer>Not made by UCLA. Works only on the Class Planner page.</footer>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

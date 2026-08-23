@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Better MyUCLA — Planner Tools",
+  "version": "0.10.1",
+  "description": "Drag, reorder, filter and annotate your MyUCLA Class Planner. Saves through MyUCLA's own buttons; never enrolls for you.",
+  "permissions": [
+    "storage"
+  ],
+  "action": {
+    "default_title": "Better MyUCLA",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "injected.css"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"
+      ],
+      "js": [
+        "page-bridge.js"
+      ],
+      "run_at": "document_end",
+      "world": "MAIN"
+    }
+  ]
+}

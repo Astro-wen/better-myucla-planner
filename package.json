@@ -1,0 +1,27 @@
+{
+  "name": "better-myucla",
+  "version": "0.10.1",
+  "private": true,
+  "description": "A local-only, safety-first MyUCLA Class Planner enhancement.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "harness": "node harness/run.mjs"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.326",
+    "esbuild": "^0.25.9",
+    "jsdom": "^26.1.0",
+    "playwright": "^1.56.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Astro-wen/better-myucla-planner.git"
+  },
+  "license": "MIT"
+}
