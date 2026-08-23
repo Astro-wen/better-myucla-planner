@@ -1,244 +1,179 @@
+<div align="center">
+
+<img src="public/icons/icon-128.png" width="72" alt="">
+
 # Better MyUCLA
 
-An unofficial Chrome extension that makes the MyUCLA Class Planner less painful
-to use. It works on exactly one page:
+**Your class plan, in the order you actually want it.**
+
+An unofficial Chrome extension for the MyUCLA Class Planner.
+
+[Install guide](https://astro-wen.github.io/better-myucla-planner/) ·
+[Latest release](https://github.com/Astro-wen/better-myucla-planner/releases/latest) ·
+[Contributing](CONTRIBUTING.md)
+
+</div>
+
+<img src="site/demo.gif" width="100%" alt="A class being dragged up the plan while a bar at the bottom counts the unsaved moves.">
+
+MyUCLA moves a class one place per click, and every click is a full page
+postback. Getting a class from 13th to 2nd costs eleven clicks and eleven page
+loads. This makes it one drag.
+
+Not made by, endorsed by, or affiliated with UCLA.
+
+---
+
+## What you get
+
+|  | |
+| --- | --- |
+| **Drag to reorder** | Drop a class anywhere in the list. Drag to the top or bottom edge and the page scrolls with you. |
+| **Send to the top** | One click from any position. |
+| **Jump to a position** | Pick the spot you want out of a dropdown. |
+| **Class notes** | 24 characters per class, kept on your own machine. |
+| **Collapse** | Fold a class, or all of them, with seat status left on the title line. |
+| **Filter** | By course, instructor, page text, or your own note. |
+| **Clash list** | Which classes each one collides with, in time or final exam, read from MyUCLA's own popover payload. |
+
+`docs/ROADMAP.md` has the rest, including the optional layout switch and the
+things that were considered and declined.
+
+---
+
+## How it works
+
+### It lives on exactly one page
 
 ```
 https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx
 ```
 
-It is a UI layer. It never enrolls, drops, waitlists, polls for seats, or
-touches credentials. When it saves a new order it does so by clicking MyUCLA's
-own up/down buttons, one validated click at a time.
+That exact path is the whole of `content_scripts.matches` in the manifest, and
+`storage` is the only permission. There is no background service worker, no
+host permission beyond that URL, and no server behind any of it.
 
-**Status:** working local beta, `0.10.3`. Not on the Chrome Web Store. Not made
-by, endorsed by, or affiliated with UCLA.
+### Rearranging is local; saving is not
 
-Pull requests are welcome and are reviewed by the maintainer before anything
-merges. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md).
+A drag reorders `<tbody>` nodes in your own DOM and stops there. Nothing is
+sent, so you can try three arrangements and throw two away for free. The bottom
+bar tracks the gap between two arrays: `savedOrder`, the order the server still
+believes, and `desiredOrder`, the one on your screen.
 
-**Trying it as a student:** the install guide is at
-<https://astro-wen.github.io/better-myucla-planner/>, and the loadable zip is on
-the [latest release](https://github.com/Astro-wen/better-myucla-planner/releases/latest).
+Save is the moment those two get reconciled, and it does that using controls
+you already had:
 
-**Working on it:** `dist/` is not committed. Clone, `npm install`,
-`npm run build`, then load `dist/` as an unpacked extension.
+```mermaid
+flowchart TD
+    A["diff desiredOrder against savedOrder"] --> B["countStepsToOrder gives n adjacent swaps"]
+    B --> C["open an offscreen same-origin iframe of ClassPlan.aspx"]
+    C --> D["nextStepTowardOrder gives one course, one direction"]
+    D --> E["click MyUCLA's own moveupClass / movedownClass"]
+    E --> F["doPostBack fires, the frame re-renders"]
+    F --> G{"is the new order the one we predicted?"}
+    G -- yes --> H{"more steps left?"}
+    H -- yes --> D
+    H -- no --> I["reload the visible page once"]
+    G -- no --> J["stop, write nothing further, keep the arrangement, offer Reload"]
+```
 
----
+Two things fall out of that design.
 
-## This file is the tracker
+**Why an offscreen frame.** Each move is an ASP.NET UpdatePanel postback that
+re-renders the page. Eleven moves on the visible page means eleven reloads
+under your cursor. The batch runs in a same-origin iframe of the same URL
+instead, so the page you are looking at reloads once, at the end. Budgeted at
+~1.2s per step, capped at 120 steps and a 15s load timeout per postback.
 
-Everything a person or an agent needs to pick this project up starts here:
+**Why clicking rather than posting.** The extension never composes a request of
+its own. It finds MyUCLA's own `button.link.moveupClass` / `movedownClass`,
+checks it against a whitelist, and clicks it. Every write is a thing you could
+have done by hand, one confirmed click at a time.
 
-| Question | File |
-| --- | --- |
-| What is the state of play, what changed last, what is next? | this file |
-| Version-by-version history and the reasoning behind each change | `CHANGELOG.md` |
-| Architecture, seams, and the traps already paid for | `HANDOFF.md` |
-| The exact MyUCLA DOM contract, verified on the live page | `docs/MYUCLA_CONTRACT.md` |
-| Where the Class Planner hurts, ranked by value over effort | `docs/PAIN_POINTS.md` |
-| A product and UX read of the page, including what UCLA should fix | `docs/UX_AUDIT.md` |
-| What data may be stored and what may never be | `PRIVACY.md` |
-| The rules no change is allowed to break | `AGENTS.md` |
-| How to propose a change, and what CI will check | `CONTRIBUTING.md` |
-| What a student reads before installing | `site/index.html` |
+### It fails closed
 
-Every version bump updates this file's status line, adds a `CHANGELOG.md`
-entry, and refreshes `HANDOFF.md` if the architecture moved.
+Before each click the button must pass every one of these, or the run stops:
 
----
+- it is a `<button>` from that frame's own realm, and a descendant of the card
+  it claims to move
+- its id is exactly `muClass<digits>` / `mdClass<digits>` for that course, and
+  its classes are `link` plus `moveupClass` / `movedownClass`
+- `title` and `aria-label` both equal `Move this Class up in the list` for the
+  direction being asked for
+- its inline `onclick` matches the expected `courseListAction(...)` string
+  character for character, including that same course number
+- it has no `type` attribute, and no `formaction`, `formmethod` or
+  `formenctype`
+- `element.form` is `#aspnetForm`, whose method is POST and whose action
+  resolves to this exact path
+- it is visible and not disabled
 
-## What it does today
+After each click the resulting order must equal the order that was predicted
+for that step. Any mismatch in page, term, plan id, DOM shape, button identity
+or resulting order aborts immediately: nothing further is written, your
+arrangement is kept, and a Reload button appears. There is no fuzzy fallback,
+because a fuzzy match here moves the wrong class.
 
-### Reordering
+The full verified DOM contract is in [`docs/MYUCLA_CONTRACT.md`](docs/MYUCLA_CONTRACT.md).
 
-MyUCLA moves a class one place per click, and each click is a full postback. A
-class at position 13 needs eleven clicks and eleven page loads to reach
-position 2.
+### What it will not do
 
-- Drag a class anywhere in the plan, send it to the top in one click, or pick a
-  position from the `#3` control on its row. `Alt + ↑/↓` works from the grip.
-- A drag can cross the whole plan: hold near the top or bottom edge and the
-  page scrolls to you.
-- Rearranging is **local and free**. Nothing reaches MyUCLA until you press
-  Save, so you can try three arrangements without paying for any of them.
-- Save states what it is about to do (`4 classes moved · about 12s`) and that
-  click is the authorization for the whole batch.
-- The batch runs in an offscreen same-origin Class Planner frame, so the
-  visible page reloads once at the end instead of once per step. If that frame
-  cannot be trusted, nothing is written at all: your arrangement is kept and a
-  Reload button appears. (`NavigationReorderCoordinator` still exists as a
-  one-move-per-reload engine but is not wired in. See `HANDOFF.md`.)
-- Any mismatch in page, term, plan, DOM, button, or expected order stops the
-  run immediately.
-
-### Where things went
-
-A course card is roughly a quarter of the screen, so most moves send the card
-out of view. Instead of scrolling the page for you:
-
-- The view stays exactly where you were reading.
-- The card that landed flashes pale yellow.
-- If it landed off screen, a chip appears at the edge it left through:
-  `↑ ANTHRO 7 → #2  [Show me] [Undo]`. It fades after seven seconds.
-- Unsaved changes live in a bar pinned to the bottom of the window, so Save is
-  reachable from anywhere in a five-thousand-pixel plan.
-
-### Reading the plan
-
-- Each card shows which classes it actually clashes with, in time or in final
-  exam, read from MyUCLA's own popover payload. No guessing, no per-card
-  clicking.
-- Collapse a class, or all of them, and the seat status stays on the title
-  line. Plans of eight or more open collapsed.
-- Filter by course, instructor, page text, or your own note.
-- Private notes per class, up to 24 characters, stored on this computer only.
-- An unsaved arrangement survives a logout or a stray navigation for 24 hours
-  and is offered back.
-
-### Optional: tidy up MyUCLA's own layout
-
-**Off by default.** Students know this page, and a familiar page that is
-slightly untidy beats a tidy page they have to relearn during enrollment week.
-0.10.0 turned this on for everyone and that was the wrong call; the switch in
-the popup is the right one. Turned on, it:
-
-- leads each class with the code you scan for, `MANAGEMENT 170`, instead of
-  splitting it across two paragraphs with the title in between;
-- prints the nine column labels once for the whole list rather than once per
-  class, and puts every section table on one shared column grid;
-- stops MyUCLA's weekly grid cutting room names in half: one line per field, an
-  ellipsis when it does not fit, the full string on hover.
-
-Switching it off restores MyUCLA's markup immediately, without a reload.
-Everything it touches fails closed: a card whose two paragraphs do not match
-the known shape, or a table that is not exactly nine columns, is left exactly
-as MyUCLA drew it.
-
-### Staying signed in
-
-MyUCLA counts only clicks as presence, so reading a plan for fifteen minutes
-signs you out. With the switch on, scrolling and mouse movement count too:
-never on a timer, never in a background tab, at most once a minute, and it
-stops after a cap you choose. MyUCLA's ~4 hour hard limit is untouched.
+Enroll, drop, waitlist, exchange, or watch for open seats. Poll MyUCLA or send
+any request of its own. Read or store passwords, cookies, tokens, UIDs, grades,
+DARS, or Duo data. These are rules, not defaults; see [`AGENTS.md`](AGENTS.md).
 
 ---
 
-## Deliberately not built
-
-Each of these was considered and declined. Read the reason before building it.
-
-- **A weekly grid.** MyUCLA already ships one on this page, with Study List /
-  Plan / Alternates toggles and a grid/agenda switch. Rebuilding it would be
-  worse and redundant.
-- **Auto-enroll, seat polling, waitlist sniping.** Out of scope, permanently.
-- **Unit-cap dates.** The second-pass cap is a College-specific study-list
-  limit, not a universal number. A wrong number during enrollment is worse than
-  no number, so the menu links to the Registrar instead.
-- **GE tags.** Not in the Class Planner DOM, college-specific, and a wrong tag
-  can cost a graduation requirement. Use a note.
-- **Background heartbeat or auto re-login.** Needs credentials and Duo, which
-  this project never touches.
-- **Bruinwalk ratings, DARS, PTE/ECR reminders.** Not in this version. Any of
-  them needs its own privacy review first.
-
----
-
-## Build and load
+## Build it
 
 ```bash
 npm install
-npm run typecheck
-npm test
-npm run build
+npm run typecheck && npm test && npm run build
 ```
 
-Then in Chrome: `chrome://extensions` → Developer mode → Load unpacked →
-select `dist/`. Open or reload Class Planner. After changing source you must
-rebuild **and** press Reload on the extension card.
+esbuild bundles four entry points to IIFE, and `public/` is copied wholesale
+into `dist/`. `dist/` is not committed. Load it in Chrome via
+`chrome://extensions` → Developer mode → Load unpacked → `dist/`. After editing
+source you must rebuild **and** press Reload on the extension card.
 
-### Checking the UI without an account
+| Command | What it does |
+| --- | --- |
+| `node harness/run.mjs drag` | Drives the built extension against an invented Class Planner. Also `idle`, `position`, `top`, `default`, `tidy`. |
+| `node harness/probe-position.mjs` | Asserts "move to #N" lands on N from every starting point. |
+| `node harness/verify-install.mjs` | Walks the published install guide: zips `dist` the way the release workflow does, unzips, side-loads into a clean profile, checks the card and every injected control. |
+| `node harness/chrome-extensions-page.mjs` | Retakes the `chrome://extensions` screenshots for the install guide. |
+| `node harness/extension-card.mjs` | Retakes the extension-card screenshot. |
+| `node scripts/make-icons.mjs` | Redraws all four icon sizes into `public/icons/`. |
 
-`harness/` runs the built extension against a local stand-in for Class Planner
-that reproduces the real DOM contract, so layout and motion can be checked
-without logging in and without touching a real plan.
-
-```bash
-node harness/run.mjs idle       # first paint, and scrolled
-node harness/run.mjs position   # move class 13 to #2, screenshot before/after
-node harness/run.mjs top        # one-click move to top from off screen
-node harness/run.mjs drag       # drag #14 to #1, holding at the top edge
-node harness/run.mjs default    # the list as MyUCLA draws it (switch off)
-node harness/run.mjs tidy       # the same list with the layout switch on
-node harness/probe-position.mjs # does "move to #N" actually land on N?
-```
-
-Before publishing a release, `node harness/verify-install.mjs` walks the
-install guide the way a student would: it zips `dist` exactly as the release
-workflow does, unzips it, side-loads the unpacked folder into a clean Chrome
-profile, then checks the extension card carries no errors and that every class
-on the page really gets its controls.
-
-The toolbar icon is generated, not hand-drawn: `node scripts/make-icons.mjs`
-redraws all four sizes into `public/icons/`. Change the mark there rather than
-editing the PNGs.
-
-The install guide's two Chrome screenshots come from
-`node harness/chrome-extensions-page.mjs`, which side-loads `dist/` into a
-throwaway profile and photographs `chrome://extensions` with Developer mode
-off and on.
-
-Screenshots land in `harness/shots/`. The fixture is entirely invented; never
-paste a real plan into it.
+The harness serves an invented fixture at the real URL through Playwright's
+`page.route()`, so the content script's `matches` pattern fires without an
+account and without touching a real plan. Screenshots land in `harness/shots/`.
+**Never paste a real plan into the fixture.**
 
 ---
 
-## State of play
+## Where things are written down
 
-Verified on the live page on 2026-08-22, read-only unless noted:
+| Question | File |
+| --- | --- |
+| Architecture, seams, and traps already paid for | [`HANDOFF.md`](HANDOFF.md) |
+| The verified MyUCLA DOM contract | [`docs/MYUCLA_CONTRACT.md`](docs/MYUCLA_CONTRACT.md) |
+| State of play, open questions, what was declined | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| Where the Class Planner hurts, ranked | [`docs/PAIN_POINTS.md`](docs/PAIN_POINTS.md) |
+| A product and UX read of the page | [`docs/UX_AUDIT.md`](docs/UX_AUDIT.md) |
+| Version history and the reasoning per change | [`CHANGELOG.md`](CHANGELOG.md) |
+| What may be stored and what may never be | [`PRIVACY.md`](PRIVACY.md) |
+| Rules no change may break | [`AGENTS.md`](AGENTS.md) |
+| How to propose a change | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
-- The section title bars are `#2C5E91` with a 7px radius, and MyUCLA already
-  parks section actions on the right of them. Our toolbar now rides in the
-  `Class Plan` bar for that reason.
-- `td.linkPanelRight` is ~300px wide and MyUCLA's own controls use ~73px, which
-  is why our row now fits beside them instead of underneath.
-- A 17-class plan is ~5,800px tall with ~200px cards, so almost every move
-  leaves the viewport. That is what the landing chip is for.
+Every version bump updates the status line below, adds a `CHANGELOG.md` entry,
+and refreshes `HANDOFF.md` if the architecture moved.
 
-Open questions and next candidates, roughly in order:
-
-1. Watch one real *mutating* save end to end. A single-step move has been
-   verified; a multi-step batch through the offscreen frame has not been
-   watched on the live page.
-2. Seat pressure at a glance. `Waitlist: 12 of 15 Taken` and
-   `Closed Class Full (36)` are already on the page; a small bar would make
-   seventeen of them scannable. Read-only, no extra requests.
-3. Back-to-back gaps. Meeting times are already rendered; flagging a ten-minute
-   gap across campus is pure arithmetic on data we have.
-4. Local export/import of notes, with schema validation and an explicit user
-   action.
-5. Bruinwalk, only as a separate read-only integration with a documented
-   source, caching, rate limits, a visible failure state, and a privacy review.
-
-Corrections found on 2026-08-22:
-
-- `saveChanges` never falls back to `NavigationReorderCoordinator`, though the
-  docs claimed it did. The claim is gone and that error now carries a Reload
-  button. Wiring the real fallback is still open, and would mean one live
-  postback per step against MyUCLA, so it needs its own decision.
-- A BruinWalk extension is already injecting instructor ratings into this
-  student's class list, so a rating integration of our own would duplicate a
-  tool they already run.
-
-Known limits: the extension must be loaded and reloaded by hand; notes stay in
-this browser; view state resets on some MyUCLA re-renders; and the folder is
-not a Git repository.
+**Status:** working local beta, `0.10.3`. Not on the Chrome Web Store.
 
 ---
 
 ## License
 
-MIT, see [`LICENSE`](LICENSE).
-
-Better MyUCLA is a personal project. It is not made by, endorsed by, or
-affiliated with UCLA, and "MyUCLA" and "UCLA" belong to the university.
+MIT, see [`LICENSE`](LICENSE). Pull requests are welcome and are reviewed before
+anything merges. "MyUCLA" and "UCLA" belong to the university.
