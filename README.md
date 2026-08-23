@@ -173,6 +173,11 @@ node harness/run.mjs tidy       # the same list with the layout switch on
 node harness/probe-position.mjs # does "move to #N" actually land on N?
 ```
 
+The install guide's two Chrome screenshots come from
+`node harness/chrome-extensions-page.mjs`, which side-loads `dist/` into a
+throwaway profile and photographs `chrome://extensions` with Developer mode
+off and on.
+
 Screenshots land in `harness/shots/`. The fixture is entirely invented; never
 paste a real plan into it.
 
