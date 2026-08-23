@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.10.2 — 2026-08-23
+
+Copy and packaging only. No behaviour changed.
+
+- The extension's own description no longer promises what it will not do. It
+  now says what saving actually does: it replays your arrangement through
+  MyUCLA's own up and down buttons. The old line ended "never enrolls for
+  you", which is true and reads like a disclaimer on a bottle.
+- The install guide gained a recorded demo, and its screenshot of the
+  extension card was retaken to match the new description.
+- `harness/verify-install.mjs` walks the published install steps end to end:
+  it zips `dist` the way the release workflow does, unzips it, side-loads the
+  unpacked folder into a clean Chrome profile, and checks that the card
+  appears without errors and that all seventeen classes get their controls.
+
 ## 0.10.1 — 2026-08-23
 
 **0.10.0 changed too much at once, and it is now off by default.**

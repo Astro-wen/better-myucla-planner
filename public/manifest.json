@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Better MyUCLA — Planner Tools",
-  "version": "0.10.1",
-  "description": "Drag, reorder, filter and annotate your MyUCLA Class Planner. Saves through MyUCLA's own buttons; never enrolls for you.",
+  "version": "0.10.2",
+  "description": "Drag, reorder, filter and annotate your MyUCLA Class Planner. Saving replays your arrangement through MyUCLA's own up and down buttons.",
   "permissions": [
     "storage"
   ],

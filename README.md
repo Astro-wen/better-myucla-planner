@@ -11,7 +11,7 @@ It is a UI layer. It never enrolls, drops, waitlists, polls for seats, or
 touches credentials. When it saves a new order it does so by clicking MyUCLA's
 own up/down buttons, one validated click at a time.
 
-**Status:** working local beta, `0.10.1`. Not on the Chrome Web Store. Not made
+**Status:** working local beta, `0.10.2`. Not on the Chrome Web Store. Not made
 by, endorsed by, or affiliated with UCLA.
 
 Pull requests are welcome and are reviewed by the maintainer before anything
@@ -172,6 +172,12 @@ node harness/run.mjs default    # the list as MyUCLA draws it (switch off)
 node harness/run.mjs tidy       # the same list with the layout switch on
 node harness/probe-position.mjs # does "move to #N" actually land on N?
 ```
+
+Before publishing a release, `node harness/verify-install.mjs` walks the
+install guide the way a student would: it zips `dist` exactly as the release
+workflow does, unzips it, side-loads the unpacked folder into a clean Chrome
+profile, then checks the extension card carries no errors and that every class
+on the page really gets its controls.
 
 The install guide's two Chrome screenshots come from
 `node harness/chrome-extensions-page.mjs`, which side-loads `dist/` into a
