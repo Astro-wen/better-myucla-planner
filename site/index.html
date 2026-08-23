@@ -6,7 +6,7 @@
     <title>Better MyUCLA</title>
     <meta
       name="description"
-      content="An unofficial browser extension that lets you drag classes around your MyUCLA Class Planner instead of clicking the arrow one position at a time."
+      content="An unofficial browser extension that lets you drag your classes wherever you want them in the MyUCLA Class Planner, instead of clicking that little arrow one position at a time."
     />
     <style>
       :root {
@@ -113,12 +113,12 @@
       .keys li {
         display: flex;
         gap: 14px;
-        align-items: center;
-        padding: 11px 0;
+        align-items: flex-start;
+        padding: 13px 0;
         border-bottom: 1px solid var(--line);
       }
 
-      .keys img { flex: 0 0 auto; width: auto; height: 26px; border-radius: 4px; }
+      .keys img { flex: 0 0 auto; width: auto; height: 26px; margin-top: 1px; border-radius: 4px; }
       .keys .wide { height: 30px; }
       .keys > li > div { font-size: 15px; }
       .keys b { font-weight: 600; }
@@ -214,11 +214,11 @@
       <h1>Better MyUCLA</h1>
       <p class="sub">
         <span class="en"
-          >Drag classes around your Class Planner, instead of clicking the arrow one
-          position at a time.</span
+          >Drag your classes wherever you want them in the Class Planner, instead of
+          clicking that little arrow one position at a time.</span
         >
         <span class="zh"
-          >在 Class Planner 里直接拖动课程，不用再一格一格点那个小箭头。</span
+          >在 Class Planner 里直接把课拖到你想要的位置，不用再一格一格地点那个小箭头。</span
         >
       </p>
       <span class="badge">
@@ -233,55 +233,87 @@
 
     <h2>
       <span class="en">What the buttons do</span>
-      <span class="zh">每个按钮是干什么的</span>
+      <span class="zh">这些按钮都是干什么的</span>
     </h2>
 
     <ul class="keys">
       <li>
         <img class="theirs" src="icon-native.png" alt="MyUCLA's own up and down arrows" />
         <div>
-          <span class="en"><b>MyUCLA's own arrows.</b> Still there, still one position per click.</span>
-          <span class="zh"><b>MyUCLA 自带的箭头。</b>还在，还是一次只挪一格。</span>
+          <span class="en"
+            ><b>MyUCLA's own arrows.</b> We left these alone, so if you just want to nudge a
+            class up or down one spot, they work the way you're already used to.</span
+          >
+          <span class="zh"
+            ><b>MyUCLA 自带的上下箭头。</b>这两个我们没动过，所以你要是只想把某门课往上或往下挪一位，还是照原来的方式点就行。</span
+          >
         </div>
       </li>
       <li>
         <img src="icon-drag.png" alt="Drag handle" />
         <div>
           <span class="en"
-            ><b>Drag.</b> Hold this and move the class anywhere. Drag toward the top or
-            bottom of the window and the page scrolls with you.</span
+            ><b>Drag it there yourself.</b> Grab this handle and drop the class wherever you
+            want it in the list. If the spot you're aiming for is off screen, drag toward the
+            top or bottom edge of the window and the page will scroll along with you.</span
           >
           <span class="zh"
-            ><b>拖动。</b>按住它把课拖到任意位置。拖到窗口上下边缘，页面会跟着滚。</span
+            ><b>直接拖过去。</b>按住这个把手，就能把课拖到列表里的任何位置。如果你想放的位置在屏幕外面，把它拖到窗口的上边缘或下边缘停着，页面会自己跟着滚过去。</span
           >
         </div>
       </li>
       <li>
         <img src="icon-top.png" alt="Move to top" />
         <div>
-          <span class="en"><b>Send to the top.</b> One click, from anywhere in the list.</span>
-          <span class="zh"><b>置顶。</b>不管在第几位，一次点击。</span>
+          <span class="en"
+            ><b>Send it to the top.</b> Moves the class straight to first place, however far
+            down it currently sits.</span
+          >
+          <span class="zh"
+            ><b>一键置顶。</b>把这门课直接挪到第一位，不管它现在排在多靠后。</span
+          >
         </div>
       </li>
       <li>
         <img class="wide" src="icon-position.png" alt="Position dropdown showing hash 2" />
         <div>
-          <span class="en"><b>Jump to a position.</b> Pick a number and it goes there.</span>
-          <span class="zh"><b>移动到指定位置。</b>选个数字，它就过去了。</span>
+          <span class="en"
+            ><b>Move it to a specific place in the order.</b> The number shows where this
+            class currently sits in your plan. Open it, pick the position you want the class
+            to end up in, and it goes straight there, so getting from 13th to 2nd is one
+            choice rather than eleven clicks and eleven page reloads.</span
+          >
+          <span class="zh"
+            ><b>移动到指定的顺序位置。</b>这个数字是这门课现在排第几。点开它，选你想让它排到第几位，它就直接过去了。比如从第 13
+            位挪到第 2 位，选一下就好，不用点十一次箭头、等十一次页面刷新。</span
+          >
         </div>
       </li>
       <li>
         <img src="icon-note.png" alt="Note" />
         <div>
-          <span class="en"><b>Note.</b> Anything you want to remember. Stays on your computer.</span>
-          <span class="zh"><b>备注。</b>随便写。只存在你自己电脑上。</span>
+          <span class="en"
+            ><b>Leave yourself a note.</b> A short line on the class for whatever you need to
+            remember, like that it clashes with your lab, or that you're only taking it if
+            something else falls through. It's saved on your own computer and never sent
+            anywhere.</span
+          >
+          <span class="zh"
+            ><b>给自己留个备注。</b>在这门课上写一句话，记点你需要记住的东西，比如「和实验课撞了」，或者「另一门选不上再考虑它」。内容只存在你自己电脑上，不会发到任何地方去。</span
+          >
         </div>
       </li>
       <li>
         <img src="icon-collapse.png" alt="Collapse" />
         <div>
-          <span class="en"><b>Collapse.</b> Hide the section table for this class.</span>
-          <span class="zh"><b>收起。</b>把这门课的 section 表格折叠起来。</span>
+          <span class="en"
+            ><b>Fold the class up.</b> Hides the section table underneath so more of your
+            plan fits on screen. The seat status stays visible on the title line.</span
+          >
+          <span class="zh"
+            ><b>把这门课折起来。</b>把下面那张 section
+            表格收掉，这样一屏能看到更多课。折起来之后，名额状态还是会留在标题那一行。</span
+          >
         </div>
       </li>
     </ul>
@@ -290,26 +322,31 @@
       <img class="shot natural" src="toolbar.png" alt="Filter classes box, Collapse all button, and a more menu." />
       <figcaption>
         <span class="en"
-          >Up in the blue bar: filter your plan, collapse every class at once, and a menu
-          with the rest.</span
+          >Up in the blue Class Plan bar there's a box for filtering your plan, a button that
+          folds every class up at once, and a menu holding the rest.</span
         >
-        <span class="zh">蓝色条上：筛选课程、一键全部收起，以及一个放其余功能的菜单。</span>
+        <span class="zh"
+          >蓝色的 Class Plan 那一栏上多了一个筛选框，旁边是一键把所有课折起来的按钮，还有一个装着其余功能的菜单。</span
+        >
       </figcaption>
     </figure>
 
     <h2>
       <span class="en">Nothing reaches MyUCLA until you press Save</span>
-      <span class="zh">不点保存，MyUCLA 那边什么都不会变</span>
+      <span class="zh">在你点保存之前，MyUCLA 那边什么都不会变</span>
     </h2>
 
     <p>
       <span class="en"
-        >Rearrange as much as you like first. A bar at the bottom of the window keeps count,
-        and Save then clicks MyUCLA's own arrows for you.</span
+        >You can rearrange things as many times as you like without paying for any of it,
+        because until you save it's all just happening in your own browser. A bar at the
+        bottom of the window keeps track of how many classes you've moved and roughly how
+        long saving will take, and when you press Save it goes and clicks MyUCLA's own arrows
+        for you, one position at a time.</span
       >
       <span class="zh"
-        >想怎么调就怎么调。窗口底部会有一条显示改了几门、大概要多久，点保存之后它才去帮你点
-        MyUCLA 自己的箭头。</span
+        >在点保存之前，这些都只发生在你自己的浏览器里，所以你可以反复调整，怎么排都不用付出代价。窗口底部那条会告诉你已经动了几门课、保存大概要花多久，等你点了保存，它才会替你去点
+        MyUCLA 自己的那些箭头，一格一格地帮你点完。</span
       >
     </p>
 
@@ -323,8 +360,11 @@
     </h2>
 
     <p>
-      <span class="en">About two minutes, in Chrome or anything built on Chrome.</span>
-      <span class="zh">大约两分钟。Chrome，或者任何基于 Chrome 的浏览器都行。</span>
+      <span class="en"
+        >It takes about two minutes, and it works in Chrome or in anything built on
+        Chrome.</span
+      >
+      <span class="zh">大概两分钟就好，Chrome 或者任何基于 Chrome 的浏览器都可以。</span>
     </p>
 
     <a class="cta" href="https://github.com/Astro-wen/better-myucla-planner/releases/latest">
@@ -336,33 +376,33 @@
       <li>
         <p>
           <span class="en"
-            ><b>Unzip it somewhere permanent.</b> Documents, not Downloads. Chrome loads it
-            from this folder every time it starts, so deleting the folder uninstalls
-            it.</span
+            >Unzip it somewhere you won't clean out later, like Documents rather than
+            Downloads. Chrome reads the extension out of this folder every time it starts up,
+            so if the folder disappears the extension goes with it.</span
           >
           <span class="zh"
-            ><b>解压到一个不会被你删掉的地方。</b>放文稿，别放下载。Chrome
-            每次启动都从这个文件夹读取，删掉文件夹就等于卸载。</span
+            >解压到一个你以后不会顺手清理掉的地方，比如放在文稿里而不是下载里。Chrome
+            每次启动都要从这个文件夹里读，所以文件夹一旦没了，扩展也就跟着没了。</span
           >
         </p>
       </li>
       <li>
         <p>
           <span class="en"
-            >Open a new tab, type <code>chrome://extensions</code> in the address bar, and
+            >Open a new tab, type <code>chrome://extensions</code> into the address bar and
             press Enter.</span
           >
           <span class="zh"
-            >新开一个标签页，在地址栏输入 <code>chrome://extensions</code>，回车。</span
+            >新开一个标签页，在地址栏里输入 <code>chrome://extensions</code> 然后回车。</span
           >
         </p>
       </li>
       <li>
         <p>
           <span class="en"
-            >Turn on <b>Developer mode</b>. The switch is in the top right corner.</span
+            >Turn on <b>Developer mode</b> using the switch in the top right corner.</span
           >
-          <span class="zh"><b>打开开发者模式</b>。开关在右上角。</span>
+          <span class="zh">点右上角那个开关，打开开发者模式。</span>
         </p>
         <figure>
           <img class="shot" src="step-devmode.png" alt="The Chrome extensions page with the Developer mode switch circled in the top right." />
@@ -371,9 +411,12 @@
       <li>
         <p>
           <span class="en"
-            >Three buttons appear on the left. Click <b>Load unpacked</b>.</span
+            >Three buttons will appear on the left, and the one you want is
+            <b>Load unpacked</b>.</span
           >
-          <span class="zh">左上角会冒出三个按钮，点 <b>Load unpacked</b>（加载已解压的扩展程序）。</span>
+          <span class="zh"
+            >左上角会冒出三个按钮，你要点的是 <b>Load unpacked</b>（加载已解压的扩展程序）。</span
+          >
         </p>
         <figure>
           <img class="shot" src="step-loadunpacked.png" alt="The same page with the Load unpacked button circled in the top left." />
@@ -382,12 +425,13 @@
       <li>
         <p>
           <span class="en"
-            >Open the folder you unzipped, select the folder named <code>dist</code> inside
-            it, and confirm. Select the folder itself, not the files inside it.</span
+            >Go into the folder you just unzipped, select the folder called <code>dist</code>
+            inside it, and confirm. Make sure you're selecting that folder itself rather than
+            opening it and picking the files inside.</span
           >
           <span class="zh"
-            >打开你刚解压的文件夹，选中里面那个叫 <code>dist</code>
-            的文件夹，确认。是选文件夹本身，不是进去选里面的文件。</span
+            >进到你刚解压出来的文件夹，选中里面那个叫 <code>dist</code>
+            的文件夹，然后确认。注意是选中这个文件夹本身，别进去选里面的文件。</span
           >
         </p>
         <figure>
@@ -396,8 +440,8 @@
       </li>
       <li>
         <p>
-          <span class="en">It should now show up like this.</span>
-          <span class="zh">装好之后长这样。</span>
+          <span class="en">If it worked, you should see it sitting there like this.</span>
+          <span class="zh">装成功的话，你应该会看到它像这样出现在列表里。</span>
         </p>
         <figure>
           <img class="shot natural" src="step-installed.png" alt="The installed extension card showing its name and version." />
@@ -406,17 +450,18 @@
       <li>
         <p>
           <span class="en"
-            >Open your Class Planner at
+            >Now open your Class Planner at
             <a href="https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"
               >be.my.ucla.edu/ClassPlanner/ClassPlan.aspx</a
-            >, sign in as usual, and scroll down to the blue <b>Class Plan</b> bar. The new
-            buttons are on every class.</span
+            >, sign in the way you normally do, and scroll down to the blue
+            <b>Class Plan</b> bar. Every class should have the new buttons on it.</span
           >
           <span class="zh"
-            >打开
+            >然后打开你的 Class Planner
             <a href="https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx"
               >be.my.ucla.edu/ClassPlanner/ClassPlan.aspx</a
-            >，照常登录，往下翻到蓝色的 <b>Class Plan</b> 那一栏，每门课上就有新按钮了。</span
+            >，照常登录，往下翻到蓝色的 <b>Class Plan</b>
+            那一栏，这时候每门课上应该都有新按钮了。</span
           >
         </p>
       </li>
@@ -424,34 +469,40 @@
 
     <div class="heads-up">
       <p>
-        <b><span class="en">Two things to expect.</span><span class="zh">两件事先说在前面。</span></b>
-      </p>
-      <p>
-        <span class="en"
-          >Chrome warns about developer-mode extensions every time it starts. That is its
-          standard notice for anything not installed from its store. Dismiss it.</span
-        >
-        <span class="zh"
-          >Chrome 每次启动都会提醒「请停用开发者模式扩展程序」。这是它对所有非商店来源扩展的标准提示，不是出问题了，关掉就行。</span
+        <b
+          ><span class="en">Two things worth knowing.</span
+          ><span class="zh">有两件事想先跟你说一下。</span></b
         >
       </p>
       <p>
         <span class="en"
-          >There is no auto-update. For a new version, unzip it <b>over the same folder</b>,
-          then press reload on the card in <code>chrome://extensions</code>. A different
-          folder loses your notes and settings.</span
+          >Chrome will warn you about developer-mode extensions every time it starts up.
+          That's just its standard notice for anything that didn't come from its store, so
+          nothing has gone wrong and you can dismiss it.</span
         >
         <span class="zh"
-          >没有自动更新。出新版本时，解压<b>覆盖同一个文件夹</b>，再去
+          >Chrome 每次启动都会跳出来提醒你「请停用开发者模式扩展程序」。这只是它对所有非商店来源扩展的例行提示，不代表出了什么问题，关掉就行。</span
+        >
+      </p>
+      <p>
+        <span class="en"
+          >It won't update itself, so when a new version comes out you'll want to unzip it
+          <b>over the same folder</b> and then hit the reload button on its card in
+          <code>chrome://extensions</code>. If you unzip it somewhere else instead, Chrome
+          treats it as a different extension and your notes and settings won't come with
+          it.</span
+        >
+        <span class="zh"
+          >它不会自动更新，所以出了新版本，记得解压<b>覆盖到同一个文件夹</b>，再去
           <code>chrome://extensions</code>
-          点那张卡片上的刷新按钮。换个文件夹的话，你的备注和设置会丢。</span
+          点那张卡片上的刷新按钮。要是解压到了别的地方，Chrome 会把它当成另一个扩展，你之前的备注和设置就跟不过来了。</span
         >
       </p>
     </div>
 
     <h2>
-      <span class="en">Turning it off</span>
-      <span class="zh">怎么关掉</span>
+      <span class="en">If you want to turn it off</span>
+      <span class="zh">不想要了怎么关</span>
     </h2>
 
     <div class="popup-row">
@@ -459,58 +510,79 @@
       <div>
         <p>
           <span class="en"
-            >Click the extension icon in the toolbar. The switch at the top puts the Class
-            Planner back exactly as MyUCLA made it, immediately.</span
+            >Click the extension's icon in your toolbar and flip the switch at the top. The
+            Class Planner goes back to exactly the way MyUCLA made it, straight away, without
+            even a reload.</span
           >
           <span class="zh"
-            >点浏览器工具栏上的扩展图标，最上面那个开关一关，Class Planner
-            立刻变回 MyUCLA 原本的样子。</span
+            >点一下工具栏上的扩展图标，把最上面那个开关关掉，Class Planner 立刻就变回
+            MyUCLA 原本的样子，连刷新都不用。</span
           >
         </p>
         <p>
           <span class="en"
-            >The other switch is optional: MyUCLA counts only clicks as "still here", so
-            reading your plan for fifteen minutes signs you out. Turn it on and scrolling
-            counts too.</span
+            >The other switch is optional, and worth explaining: MyUCLA only counts clicks as
+            proof that you're still there, so if you spend fifteen minutes reading your plan
+            without clicking anything it signs you out. Turn this on and scrolling counts
+            too.</span
           >
           <span class="zh"
-            >另一个开关是可选的：MyUCLA 只把点击当作「你还在」，所以光看不点，十五分钟就把你登出了。打开它，滚动也算数。</span
+            >另一个开关是可选的，顺便解释一下它是干嘛的：MyUCLA
+            只把点击当成「人还在」，所以你要是盯着计划看了十五分钟却没点任何东西，它就把你登出了。打开这个开关之后，滚动页面也算数。</span
           >
         </p>
       </div>
     </div>
 
     <h2>
-      <span class="en">What it can and cannot reach</span>
+      <span class="en">What it can and can't touch</span>
       <span class="zh">它能碰什么，不能碰什么</span>
     </h2>
 
     <ul>
       <li>
-        <span class="en">One page only: <code>be.my.ucla.edu/ClassPlanner/ClassPlan.aspx</code>.</span>
-        <span class="zh">只有一个页面：<code>be.my.ucla.edu/ClassPlanner/ClassPlan.aspx</code>。</span>
-      </li>
-      <li>
-        <span class="en">One permission: local storage, for your notes and collapsed classes.</span>
-        <span class="zh">只申请一个权限：本地存储，用来记你的备注和收起状态。</span>
-      </li>
-      <li>
-        <span class="en">No server, no account. Nothing leaves your browser.</span>
-        <span class="zh">没有服务器，没有账号。没有任何数据离开你的浏览器。</span>
+        <span class="en"
+          >It only runs on one page,
+          <code>be.my.ucla.edu/ClassPlanner/ClassPlan.aspx</code>, and nowhere else on
+          MyUCLA.</span
+        >
+        <span class="zh"
+          >它只在一个页面上运行，就是
+          <code>be.my.ucla.edu/ClassPlanner/ClassPlan.aspx</code>，MyUCLA 的其他页面它都碰不到。</span
+        >
       </li>
       <li>
         <span class="en"
-          >Never enrolls, drops, waitlists, or watches for open seats. Never reads your
-          password, cookies, UID, grades, or DARS.</span
+          >It asks for one permission, local storage, which is where your notes and your
+          folded-up classes are kept.</span
         >
         <span class="zh"
-          >绝不替你选课、退课、加候补，也不盯空位。绝不读你的密码、Cookie、UID、成绩或
+          >它只申请了一个权限，本地存储，用来记住你的备注和哪些课被你折起来了。</span
+        >
+      </li>
+      <li>
+        <span class="en"
+          >There's no server and no account behind it, so nothing ever leaves your
+          browser.</span
+        >
+        <span class="zh">它背后没有服务器也没有账号，所以不会有任何东西离开你的浏览器。</span>
+      </li>
+      <li>
+        <span class="en"
+          >It never enrolls, drops, waitlists, or watches for open seats, and it never reads
+          your password, cookies, UID, grades, or DARS.</span
+        >
+        <span class="zh"
+          >它不会替你选课、退课或者加候补，也不会盯着有没有空位，更不会去读你的密码、Cookie、UID、成绩或者
           DARS。</span
         >
       </li>
       <li>
-        <span class="en">Source is public: </span><span class="zh">代码全部公开：</span>
-        <a href="https://github.com/Astro-wen/better-myucla-planner">GitHub</a>.
+        <span class="en">All the code is public on </span
+        ><span class="zh">所有代码都公开在 </span>
+        <a href="https://github.com/Astro-wen/better-myucla-planner">GitHub</a>
+        <span class="en"> if you'd rather check any of that yourself.</span>
+        <span class="zh"> 上，上面这些你都可以自己去核对。</span>
       </li>
     </ul>
 
@@ -521,54 +593,59 @@
 
     <p>
       <span class="en"
-        >This is an early version, and MyUCLA can change its pages at any time. When it
-        does, this stops rather than guesses, so the worst case should be that it does
-        nothing.</span
+        >This is still an early version, and MyUCLA can change its own pages whenever it
+        likes. When that happens the extension stops instead of guessing, so the worst case
+        should be that it quietly does nothing rather than moving the wrong class.</span
       >
       <span class="zh"
-        >这是很早期的版本，MyUCLA 随时可能改自己的页面。真改了的话，它会直接停下而不是乱猜，所以最坏的情况是它不干活。</span
+        >这还是个很早期的版本，而 MyUCLA
+        想什么时候改自己的页面就什么时候改。真改了的话，它会直接停下来而不是瞎猜，所以最坏的情况是它安静地不干活，而不是把你的课挪错地方。</span
       >
     </p>
 
     <ul>
       <li>
-        <span class="en">Something broken, or just annoying? </span>
-        <span class="zh">哪里坏了，或者只是用着别扭？</span>
+        <span class="en">If something's broken, or just annoying to use, </span>
+        <span class="zh">要是哪里坏了，或者只是用着不顺手，可以 </span>
         <a href="https://github.com/Astro-wen/better-myucla-planner/issues/new">
-          <span class="en">Open an issue</span><span class="zh">提个 issue</span></a
-        ><span class="en">, or email </span><span class="zh">，或者发邮件给 </span>
+          <span class="en">open an issue</span><span class="zh">提个 issue</span></a
+        ><span class="en"> or email me at </span><span class="zh">，或者直接发邮件给我 </span>
         <a href="mailto:linmengfdm@gmail.com">linmengfdm@gmail.com</a>.
       </li>
       <li>
         <span class="en"
-          >Pull requests are welcome. Let's turn MyUCLA into what we actually want it to
+          >Pull requests are very welcome. Let's turn MyUCLA into what we actually want it to
           be.</span
         >
-        <span class="zh">也欢迎在 GitHub 上提 PR。让我们一起把 MyUCLA 变成我们想要的样子。</span>
+        <span class="zh"
+          >也非常欢迎在 GitHub 上提 PR，让我们一起把 MyUCLA 变成我们想要的样子！</span
+        >
       </li>
       <li>
-        <span class="en">Please blur anything identifying in screenshots.</span>
-        <span class="zh">发截图前，麻烦把能认出你的信息糊掉。</span>
+        <span class="en"
+          >If you're sending a screenshot, please blur out anything that identifies you
+          first.</span
+        >
+        <span class="zh">如果要发截图，麻烦先把能认出你身份的信息糊掉。</span>
       </li>
     </ul>
 
     <figure>
       <img class="meme" src="meme.png" alt="The Flex Tape meme: a product manager patching a leak labelled useless feature." />
       <figcaption>
-        <span class="en">Tell me which one is the useless feature.</span>
-        <span class="zh">告诉我哪个功能是多余的。</span>
+        <span class="en">Go on, tell me which one's the useless feature.</span>
+        <span class="zh">来说说看，哪个才是那个多余的功能。</span>
       </figcaption>
     </figure>
 
     <footer>
       <p>
         <span class="en"
-          >A personal project by a UCLA student. Not made by, endorsed by, or affiliated
-          with UCLA, and not on the Chrome Web Store.</span
+          >A personal project by a UCLA student. It isn't made by, endorsed by, or affiliated
+          with UCLA, and it isn't on the Chrome Web Store.</span
         >
         <span class="zh"
-          >一个 UCLA 学生的个人项目。非 UCLA 官方，与 UCLA 无关联，也没有上架 Chrome
-          应用商店。</span
+          >一个 UCLA 学生的个人项目，和 UCLA 官方没有任何关系，也没有上架 Chrome 应用商店。</span
         >
       </p>
     </footer>
