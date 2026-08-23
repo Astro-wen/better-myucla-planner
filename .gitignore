@@ -10,3 +10,6 @@ harness/shots/
 
 .DS_Store
 *.log
+
+# Patch files used to move commits between machines.
+*.patch

@@ -17,6 +17,9 @@ by, endorsed by, or affiliated with UCLA.
 Pull requests are welcome and are reviewed by the maintainer before anything
 merges. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
+`dist/` is not committed. Clone, `npm install`, `npm run build`, then load
+`dist/` as an unpacked extension.
+
 ---
 
 ## This file is the tracker
