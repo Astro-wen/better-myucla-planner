@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Better MyUCLA</title>
+    <link rel="icon" href="icon.png" />
     <meta
       name="description"
       content="An unofficial browser extension for the MyUCLA Class Planner. Drag your classes into the order you want, then save the whole arrangement in one go."
@@ -187,6 +188,15 @@
       .popup-row { display: flex; gap: 22px; align-items: flex-start; }
       .popup-row img { width: 232px; border: 1px solid var(--line); border-radius: 8px; }
       .popup-row p:first-child { margin-top: 0; }
+
+      .inline-icon {
+        display: inline-block;
+        width: 1.15em;
+        height: 1.15em;
+        margin: 0 1px;
+        border-radius: 3px;
+        vertical-align: -0.24em;
+      }
 
       .meme { display: block; width: 100%; max-width: 340px; margin: 16px 0 0; border-radius: 8px; }
 
@@ -518,12 +528,13 @@
       <div>
         <p>
           <span class="en"
-            >Click the extension's icon in your toolbar and flip the switch at the top. The
+            >Click the extension's icon <img class="inline-icon" src="icon.png" alt="" /> in
+            your toolbar and flip the switch at the top. The
             Class Planner goes back to exactly the way MyUCLA made it, straight away, without
             even a reload.</span
           >
           <span class="zh"
-            >点一下工具栏上的扩展图标，把最上面那个开关关掉，Class Planner 立刻就变回
+            >点一下工具栏上的扩展图标 <img class="inline-icon" src="icon.png" alt="" />，把最上面那个开关关掉，Class Planner 立刻就变回
             MyUCLA 原本的样子，连刷新都不用。</span
           >
         </p>

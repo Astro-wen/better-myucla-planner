@@ -1,14 +1,26 @@
 {
   "manifest_version": 3,
   "name": "Better MyUCLA — Planner Tools",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "description": "Drag, reorder, filter and annotate your MyUCLA Class Planner. Saving replays your arrangement through MyUCLA's own up and down buttons.",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
   "permissions": [
     "storage"
   ],
   "action": {
     "default_title": "Better MyUCLA",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
   },
   "content_scripts": [
     {

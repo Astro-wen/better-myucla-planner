@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.10.3 — 2026-08-23
+
+**The extension has a face.** Until now Chrome drew the default grey puzzle
+piece in the toolbar, while the install guide told students to "click the
+extension icon". That is a bad instruction when every unpacked extension looks
+identical.
+
+- The mark is the product in one picture: a short list with its first row
+  picked out in UCLA gold, on a UCLA blue rounded square.
+- Four sizes, drawn separately rather than scaled from one master.
+  `scripts/make-icons.mjs` recomputes the geometry per size and snaps every
+  edge to a whole pixel, because a 16px icon downscaled from 128 comes out as
+  grey mush in the toolbar. Re-run it to change the mark.
+- Wired into the manifest twice, as `icons` for the extensions page and the
+  Web Store, and as `action.default_icon` for the toolbar button.
+- The install guide shows the icon inline where it tells you to click it, and
+  the site finally has a favicon.
+
 ## 0.10.2 — 2026-08-23
 
 Copy and packaging only. No behaviour changed.
