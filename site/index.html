@@ -6,7 +6,7 @@
     <title>Better MyUCLA</title>
     <meta
       name="description"
-      content="An unofficial browser extension that lets you drag your classes wherever you want them in the MyUCLA Class Planner, instead of clicking that little arrow one position at a time."
+      content="An unofficial browser extension for the MyUCLA Class Planner. Drag your classes into the order you want, then save the whole arrangement in one go."
     />
     <style>
       :root {
@@ -82,6 +82,7 @@
       }
 
       p { margin: 12px 0; }
+      .lead { font-size: 18px; line-height: 1.5; }
       /* Links here include a full URL, which must wrap on a phone. */
       a { color: var(--blue); overflow-wrap: anywhere; }
 
@@ -213,13 +214,8 @@
     <header>
       <h1>Better MyUCLA</h1>
       <p class="sub">
-        <span class="en"
-          >Drag your classes wherever you want them in the Class Planner, instead of
-          clicking that little arrow one position at a time.</span
-        >
-        <span class="zh"
-          >在 Class Planner 里直接把课拖到你想要的位置，不用再一格一格地点那个小箭头。</span
-        >
+        <span class="en">Your class plan, in the order you actually want it.</span>
+        <span class="zh">选课计划，想怎么排就怎么排。</span>
       </p>
       <span class="badge">
         <span class="en">Not made by, endorsed by, or affiliated with UCLA</span>
@@ -332,21 +328,26 @@
     </figure>
 
     <h2>
-      <span class="en">Your changes reach MyUCLA when you press Save</span>
-      <span class="zh">改动是在你点保存的那一刻才到 MyUCLA 的</span>
+      <span class="en">Rearrange freely. Save when you mean it.</span>
+      <span class="zh">随便排，想好了再保存</span>
     </h2>
+
+    <p class="lead">
+      <span class="en">It works like a shopping cart. The shop only finds out at checkout.</span>
+      <span class="zh">它像个购物车。你加加减减，商家那边直到你提交订单才知道。</span>
+    </p>
 
     <p>
       <span class="en"
-        >You can rearrange things as many times as you like without paying for any of it,
-        because until you save it's all just happening in your own browser. A bar at the
-        bottom of the window keeps track of how many classes you've moved and roughly how
-        long saving will take, and when you press Save it goes and clicks MyUCLA's own arrows
-        for you, one position at a time.</span
+        >Dragging a class changes the order of the page sitting in your browser, and that is
+        all it changes. Press Save and the extension turns your arrangement into a list of
+        clicks on MyUCLA's own up and down arrows, then works through them for you, one
+        position at a time. The bar at the bottom of the window shows how many classes you've
+        moved and roughly how long that will take.</span
       >
       <span class="zh"
-        >在点保存之前，这些都只发生在你自己的浏览器里，所以你可以反复调整，怎么排都不用付出代价。窗口底部那条会告诉你已经动了几门课、保存大概要花多久，等你点了保存，它才会替你去点
-        MyUCLA 自己的那些箭头，一格一格地帮你点完。</span
+        >拖动一门课，改的只是你浏览器里这个页面的显示顺序，仅此而已。等你点了保存，它才把你排好的顺序翻译成一串针对
+        MyUCLA 自己那两个上下箭头的点击，然后一格一格替你点完。窗口底部那条会显示你动了几门课、大概要花多久。</span
       >
     </p>
 
@@ -587,18 +588,6 @@
       <span class="en">Help make it better</span>
       <span class="zh">一起把它做好</span>
     </h2>
-
-    <p>
-      <span class="en"
-        >This is still an early version, and MyUCLA can change its own pages whenever it
-        likes. When that happens the extension stops and waits for a fix, so at worst you get
-        the Class Planner back exactly as it was.</span
-      >
-      <span class="zh"
-        >这还是个很早期的版本，而 MyUCLA
-        想什么时候改自己的页面就什么时候改。真改了的话，它会直接停下来等修，所以最差的情况就是你拿回原来那个 Class Planner。</span
-      >
-    </p>
 
     <ul>
       <li>
