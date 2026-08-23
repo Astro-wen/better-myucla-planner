@@ -17,8 +17,12 @@ by, endorsed by, or affiliated with UCLA.
 Pull requests are welcome and are reviewed by the maintainer before anything
 merges. Start with [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
-`dist/` is not committed. Clone, `npm install`, `npm run build`, then load
-`dist/` as an unpacked extension.
+**Trying it as a student:** the install guide is at
+<https://astro-wen.github.io/better-myucla-planner/>, and the loadable zip is on
+the [latest release](https://github.com/Astro-wen/better-myucla-planner/releases/latest).
+
+**Working on it:** `dist/` is not committed. Clone, `npm install`,
+`npm run build`, then load `dist/` as an unpacked extension.
 
 ---
 
@@ -37,6 +41,7 @@ Everything a person or an agent needs to pick this project up starts here:
 | What data may be stored and what may never be | `PRIVACY.md` |
 | The rules no change is allowed to break | `AGENTS.md` |
 | How to propose a change, and what CI will check | `CONTRIBUTING.md` |
+| What a student reads before installing | `site/index.html` |
 
 Every version bump updates this file's status line, adds a `CHANGELOG.md`
 entry, and refreshes `HANDOFF.md` if the architecture moved.

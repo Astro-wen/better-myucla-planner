@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Better MyUCLA</title>
+    <meta
+      name="description"
+      content="An unofficial browser extension that lets you drag classes around your MyUCLA Class Planner instead of clicking the arrow one position at a time."
+    />
+    <style>
+      :root {
+        --ink: #1d2733;
+        --muted: #5d6b7a;
+        --blue: #2c5e91;
+        --blue-dark: #1b3c5e;
+        --line: #dde5ec;
+        --wash: #f5f8fa;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 0 20px 72px;
+        background: #fff;
+        color: var(--ink);
+        font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      header { padding: 52px 0 4px; }
+      h1 { margin: 0; font-size: 30px; letter-spacing: -0.01em; }
+      .sub { margin: 8px 0 0; color: var(--muted); font-size: 17px; }
+
+      .badge {
+        display: inline-block;
+        margin-top: 14px;
+        padding: 3px 11px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      h2 {
+        margin: 40px 0 14px;
+        padding-top: 20px;
+        border-top: 1px solid var(--line);
+        font-size: 19px;
+        letter-spacing: -0.01em;
+      }
+
+      p { margin: 12px 0; }
+      a { color: var(--blue); }
+
+      code {
+        padding: 1px 5px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: var(--wash);
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.88em;
+        overflow-wrap: anywhere;
+      }
+
+      figure { margin: 20px 0 0; }
+
+      .shot {
+        display: block;
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+      }
+
+      figcaption { margin-top: 7px; color: var(--muted); font-size: 13px; }
+
+      /* Small crops should sit at their own size, not be blown up to the column. */
+      .shot.natural { width: auto; max-width: 100%; }
+
+      /* Icon legend */
+      .keys { margin: 6px 0 0; padding: 0; list-style: none; }
+
+      .keys li {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        padding: 11px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .keys img {
+        flex: 0 0 auto;
+        width: auto;
+        height: 26px;
+        border-radius: 4px;
+      }
+
+      .keys .wide { height: 30px; }
+      .keys span { font-size: 15px; }
+      .keys b { font-weight: 600; }
+      .keys .theirs { opacity: 0.75; }
+
+      .cta {
+        display: inline-block;
+        margin: 8px 0 4px;
+        padding: 12px 22px;
+        border-radius: 8px;
+        background: var(--blue);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .cta:hover { background: var(--blue-dark); }
+
+      ol { margin: 16px 0; padding-left: 22px; }
+      ol li { margin: 7px 0; }
+      ul { margin: 12px 0; padding-left: 22px; }
+      ul li { margin: 5px 0; }
+
+      .heads-up {
+        margin: 22px 0 0;
+        padding: 14px 16px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--wash);
+        font-size: 15px;
+      }
+
+      .heads-up p:first-child { margin-top: 0; }
+      .heads-up p:last-child { margin-bottom: 0; }
+
+      .popup-row { display: flex; gap: 22px; align-items: flex-start; }
+      .popup-row img { width: 232px; border: 1px solid var(--line); border-radius: 8px; }
+
+      footer {
+        margin-top: 48px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 560px) {
+        header { padding-top: 34px; }
+        h1 { font-size: 25px; }
+        .popup-row { flex-direction: column; }
+        .popup-row img { width: 100%; max-width: 300px; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Better MyUCLA</h1>
+      <p class="sub">
+        Drag classes around your Class Planner, instead of clicking the arrow one position
+        at a time.
+      </p>
+      <span class="badge">Not made by, endorsed by, or affiliated with UCLA</span>
+    </header>
+
+    <figure>
+      <img class="shot" src="planner.png" alt="A Class Planner list with extra controls on each class." />
+    </figure>
+
+    <h2>What the buttons do</h2>
+
+    <ul class="keys">
+      <li>
+        <img class="theirs" src="icon-native.png" alt="MyUCLA's own up and down arrows" />
+        <span><b>MyUCLA's own arrows.</b> Still there, still one position per click.</span>
+      </li>
+      <li>
+        <img src="icon-drag.png" alt="Drag handle" />
+        <span>
+          <b>Drag.</b> Hold this and move the class anywhere. Drag toward the top or bottom
+          of the window and the page scrolls with you.
+        </span>
+      </li>
+      <li>
+        <img src="icon-top.png" alt="Move to top" />
+        <span><b>Send to the top.</b> One click, from anywhere in the list.</span>
+      </li>
+      <li>
+        <img class="wide" src="icon-position.png" alt="Position dropdown showing hash 2" />
+        <span><b>Jump to a position.</b> Pick a number and it goes there.</span>
+      </li>
+      <li>
+        <img src="icon-note.png" alt="Note" />
+        <span><b>Note.</b> Anything you want to remember. Stays on your computer.</span>
+      </li>
+      <li>
+        <img src="icon-collapse.png" alt="Collapse" />
+        <span><b>Collapse.</b> Hide the section table for this class.</span>
+      </li>
+    </ul>
+
+    <figure>
+      <img class="shot natural" src="toolbar.png" alt="Filter classes box, Collapse all button, and a more menu." />
+      <figcaption>
+        Up in the blue bar: filter your plan, collapse every class at once, and a menu with
+        the rest.
+      </figcaption>
+    </figure>
+
+    <h2>Nothing reaches MyUCLA until you press Save</h2>
+
+    <p>
+      Rearrange as much as you like first. A bar at the bottom of the window keeps count,
+      and Save then clicks MyUCLA's own arrows for you.
+    </p>
+
+    <figure>
+      <img class="shot natural" src="savebar.png" alt="A bar reading: 1 class moved, about 13 seconds, Undo all, Save to MyUCLA." />
+    </figure>
+
+    <h2>Install it</h2>
+
+    <p>About two minutes, in Chrome or anything built on Chrome.</p>
+
+    <a class="cta" href="https://github.com/Astro-wen/better-myucla-planner/releases/latest"
+      >Download the latest version</a
+    >
+
+    <ol>
+      <li><b>Unzip it somewhere permanent.</b> Documents, not Downloads.</li>
+      <li>Open <code>chrome://extensions</code> in a new tab.</li>
+      <li>Turn on <b>Developer mode</b>, top right.</li>
+      <li>Click <b>Load unpacked</b>, top left.</li>
+      <li>Choose the <code>dist</code> folder inside the folder you unzipped.</li>
+      <li>
+        Open
+        <a href="https://be.my.ucla.edu/ClassPlanner/ClassPlan.aspx">your Class Planner</a>
+        and scroll to <b>Class Plan</b>.
+      </li>
+    </ol>
+
+    <div class="heads-up">
+      <p><b>Two things to expect.</b></p>
+      <p>
+        Chrome warns about developer-mode extensions every time it starts. That is its
+        standard notice for anything not installed from its store. Dismiss it.
+      </p>
+      <p>
+        There is no auto-update. For a new version, unzip it <b>over the same folder</b>,
+        then press reload on the card in <code>chrome://extensions</code>. A different
+        folder loses your notes and settings.
+      </p>
+    </div>
+
+    <h2>Turning it off</h2>
+
+    <div class="popup-row">
+      <img src="popup.png" alt="The extension popup, with an on/off switch at the top." />
+      <div>
+        <p style="margin-top: 0">
+          Click the extension icon in the toolbar. The switch at the top puts the Class
+          Planner back exactly as MyUCLA made it, immediately.
+        </p>
+        <p>
+          The other switch is optional: MyUCLA counts only clicks as "still here", so
+          reading your plan for fifteen minutes signs you out. Turn it on and scrolling
+          counts too.
+        </p>
+      </div>
+    </div>
+
+    <h2>What it can and cannot reach</h2>
+
+    <ul>
+      <li>One page only: <code>be.my.ucla.edu/ClassPlanner/ClassPlan.aspx</code>.</li>
+      <li>One permission: local storage, for your notes and collapsed classes.</li>
+      <li>No server, no account. Nothing leaves your browser.</li>
+      <li>
+        Never enrolls, drops, waitlists, or watches for open seats. Never reads your
+        password, cookies, UID, grades, or DARS.
+      </li>
+      <li>
+        Source is public:
+        <a href="https://github.com/Astro-wen/better-myucla-planner">on GitHub</a>.
+      </li>
+    </ul>
+
+    <h2>Something broke?</h2>
+
+    <p>
+      MyUCLA can change its pages at any time. When it does, this stops rather than guesses,
+      so the worst case should be that it does nothing.
+      <a href="https://github.com/Astro-wen/better-myucla-planner/issues/new">Tell me here</a>.
+      Please blur anything identifying in screenshots.
+    </p>
+
+    <footer>
+      <p>
+        A personal project by a UCLA student. Not made by, endorsed by, or affiliated with
+        UCLA, and not on the Chrome Web Store.
+      </p>
+    </footer>
+  </body>
+</html>

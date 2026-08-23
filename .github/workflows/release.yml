@@ -1,0 +1,56 @@
+name: Release
+
+# Tag a version and this builds it, zips the loadable extension, and attaches
+# the zip to a GitHub Release. The install page links to /releases/latest, so
+# that link never goes stale.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+      - name: Check the tag matches the manifest version
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          MANIFEST=$(node -p "require('./dist/manifest.json').version")
+          if [ "$TAG" != "$MANIFEST" ]; then
+            echo "Tag $TAG does not match manifest version $MANIFEST." >&2
+            exit 1
+          fi
+
+      # The zip contains dist/ itself, so "Load unpacked" points at a folder
+      # named dist, exactly as the install page says.
+      - name: Package
+        run: zip -r "better-myucla-${GITHUB_REF_NAME}.zip" dist
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: better-myucla-*.zip
+          generate_release_notes: true
+          body: |
+            Install guide: https://astro-wen.github.io/better-myucla-planner/
+
+            Download the zip below, unzip it somewhere permanent, then in Chrome open
+            `chrome://extensions`, turn on Developer mode, click "Load unpacked" and
+            choose the `dist` folder.
+
+            Updating an existing install: unzip over the same folder, then press the
+            reload icon on the extension's card.
