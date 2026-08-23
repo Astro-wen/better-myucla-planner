@@ -175,5 +175,4 @@ and refreshes `HANDOFF.md` if the architecture moved.
 
 ## License
 
-MIT, see [`LICENSE`](LICENSE). Pull requests are welcome and are reviewed before
-anything merges. "MyUCLA" and "UCLA" belong to the university.
+MIT
