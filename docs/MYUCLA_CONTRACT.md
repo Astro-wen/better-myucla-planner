@@ -120,6 +120,52 @@ MyUCLA 自己写的 popover HTML：
 
 注意：同一份 plan 内 `tip-*` 这些 id 会重复，不可作为唯一键。
 
+## 周历方块的边框就是选课状态（2026-08-27 只读验证）
+
+`#gridDiv .planneritembox` 的 inline style 里，`border` 的样式区分这门课是**已选上**还是**只在计划里**：
+
+- 已 enroll：`border: double 3px <课程色>`
+- 只在 plan 里：`border: solid 1px <课程色>`
+
+在一份 7 门课、20 个方块的真实 plan 上逐个核对，无一例外：四门已选上的课全部是
+`double 3px`，三门只在计划里的全部是 `solid 1px`。
+
+同一门课的所有方块颜色一致（`background-color` / `color` / 边框色三个值成套），
+因此颜色可以在**周历内部**把同一门课的方块归为一组。但它不能用来对应到下面的
+课程卡：卡片上没有任何元素带这个颜色，`.colorswatch` 这个选择器在真实页面上不
+存在（返回空集）。
+
+对实现的意义：注入 UI 要表达「已选上 / 还在计划」时，`double` 边框是**页面自己
+已经在用的记号**，学生在周历上已经在读它了。不要另发明一套。
+
+样例（脱敏，只保留结构与颜色）：
+
+```html
+<div style="background-color: #F9F9EC !important; color: #605F20;
+            border: double 3px #CECD6B; top: 48px; left: 0%;
+            width: calc(100% - 7px); height: 35px;"
+     class="planneritembox smallitem">MGMT 170<br class="hide-small"><span
+     class="hide-above-small"> </span>Lec 1<br class="hide-small"><span
+     class="hide-above-small"> </span>Entrepreneurs Hall C314</div>
+```
+
+方块本身**没有 id，也没有任何 data 属性**，三行文字依次是课程代号、section、地点。
+
+## 课程卡的 section 表（2026-08-27 只读验证）
+
+`tbody.courseItem` 第三行里的 `table.coursetable` 是九列：
+
+```
+Change | Section | Status | Info | Days | Time | Location | Units | Instructor
+```
+
+`Section` 与 `Location` 两列的写法和周历方块的第二、三行**逐字一致**（`Act 1` /
+`Entrepreneurs Hall C314`），而周历方块的课程代号用缩写（`MGMT 170`），
+卡片标题用全称（`Management 170`）——**课号部分两边相同，只有学科名不同**。
+
+表格最后一行是 Plan Actions / Enrollment Actions，其中包含 **Enroll 按钮**。任何
+注入行为都不得触碰这一行。
+
 ## 会话超时：只补在场信号，不做后台心跳
 
 `IWE/js/Timeout.js` 的事实：

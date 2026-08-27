@@ -77,7 +77,6 @@ function card(course, index, total) {
       </td>
       <td class="linkPanelRight" rowspan="2">
         <div class="OrderingButtons">
-          <span class="colorswatch" style="background:${course.color}"></span>
           <button id="muClass${id}" class="link moveupClass"
             title="Move this Class up in the list" aria-label="Move this Class up in the list"
             onclick="${command("up", id)}"
@@ -156,7 +155,6 @@ export function fixtureHtml(count = COURSES.length) {
   .icon-info-sign::before { content:"ℹ"; }
   .icon-pencil::before { content:"✎"; }
   .icon-minus-sign::before { content:"⊖"; }
-  .colorswatch { display:inline-block; width:44px; height:22px; border:1px solid #767676; border-radius:2px; }
   .OrderingButtons button.link { border:0; background:none; padding:0; color:#204e91; font-size:17px; cursor:pointer; }
   .final_exam_info { padding:2px 8px 6px; border-left:3px solid #d6d6d6; margin-left:2px; }
   .final_exam_note { padding-left:76px; }
@@ -193,9 +191,9 @@ export function fixtureHtml(count = COURSES.length) {
     <div id="ctl00_MainContent_panelGrid"><div id="gridDiv" class="sgChecked">
       <div class="hourbox">8<sup>AM</sup></div>
       <div class="timebox">
-        <div class="planneritembox" style="top:0px;height:48px;left:0;width:120px;background:#ecf8f9">ENGR 216<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span><span class="icon-warning-sign planConflict"></span>Physics and Astronomy Building 1425</div>
-        <div class="planneritembox" style="top:60px;height:86px;left:0;width:120px;background:#f6ecf9">MCD BIO 60<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span>Bunche Hall 3153</div>
-        <div class="planneritembox smallitem" style="top:150px;height:34px;left:0;width:58px;background:#eef0fa">MGMT 170<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span>Entrepreneurs Hall C314</div>
+        <div class="planneritembox" style="background-color:#ecf8f9 !important;color:#0c5373;border:solid 1px #41b5eb;top:0px;height:48px;left:0;width:120px">ENGR 216<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span><span class="icon-warning-sign planConflict"></span>Physics and Astronomy Building 1425</div>
+        <div class="planneritembox" style="background-color:#f6ecf9 !important;color:#180877;border:double 3px #4a2ff1;top:60px;height:86px;left:0;width:120px">MCD BIO 60<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span>Bunche Hall 3153</div>
+        <div class="planneritembox smallitem" style="background-color:#eef0fa !important;color:#605f20;border:solid 1px #cecd6b;top:150px;height:34px;left:0;width:58px">MGMT 170<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span>Entrepreneurs Hall C314</div>
       </div>
     </div></div>
     <div id="ctl00_MainContent_classPlanPanel">

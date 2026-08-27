@@ -1111,7 +1111,12 @@ html.pl-boot #ctl00_MainContent_classPlanPanel {
 /* Settled, not still being hoped for. MyUCLA states enrolment in one word
    inside a table cell; on a revision calendar the difference is whether this
    exam is definitely yours. Two lines rather than a colour, so it survives
-   sitting next to the red and amber warnings. `docs/PAIN_POINTS.md` #4. */
+   sitting next to the red and amber warnings. `docs/PAIN_POINTS.md` #4.
+
+   Double is not an arbitrary pick. MyUCLA already draws an enrolled class in
+   its own weekly grid with `border: double 3px` and a planned one with
+   `border: solid 1px` — verified across a 20-block plan, see
+   `docs/MYUCLA_CONTRACT.md`. This is the page's own mark, not a new one. */
 .pl-finals-block.pl-finals-enrolled {
   border: 3px double var(--pl-blue);
   padding: 3px 4px;
