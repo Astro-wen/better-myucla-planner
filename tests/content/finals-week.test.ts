@@ -53,6 +53,47 @@ describe("buildFinalsWeek", () => {
     expect(week.querySelector(".pl-finals-gap")?.textContent).toBe("30 min until the next one");
   });
 
+  it("marks two exams at the same time in red, and names the other class", () => {
+    const week = entries(
+      { label: "MATH 33B", exam: FRIDAY_MORNING },
+      { label: "PHYSICS 1B", exam: exam("2026-12-11", 8 * 60, 11 * 60, "8am-11am") }
+    );
+
+    const clashes = [...week.querySelectorAll(".pl-finals-clash")];
+    expect(clashes).toHaveLength(2);
+    expect(week.querySelector(".pl-finals-clash-note")?.textContent).toContain("PHYSICS 1B");
+  });
+
+  it("catches a partial overlap, not just an identical slot", () => {
+    const week = entries(
+      { label: "MATH 33B", exam: FRIDAY_MORNING },
+      { label: "PHYSICS 1B", exam: exam("2026-12-11", 10 * 60, 13 * 60, "10am-1pm") }
+    );
+
+    expect(week.querySelectorAll(".pl-finals-clash")).toHaveLength(2);
+  });
+
+  it("reports an overlap as an overlap and not also as a tight gap", () => {
+    const week = entries(
+      { label: "MATH 33B", exam: FRIDAY_MORNING },
+      { label: "PHYSICS 1B", exam: exam("2026-12-11", 8 * 60, 11 * 60, "8am-11am") }
+    );
+
+    expect(week.querySelector(".pl-finals-gap")).toBeNull();
+  });
+
+  it("does not call two exams that merely touch a clash", () => {
+    const week = entries(
+      { label: "MATH 33B", exam: FRIDAY_MORNING },
+      { label: "PHYSICS 1B", exam: exam("2026-12-11", 11 * 60, 14 * 60, "11am-2pm") }
+    );
+
+    expect(week.querySelector(".pl-finals-clash")).toBeNull();
+    expect(week.querySelector(".pl-finals-gap")?.textContent).toBe(
+      "next exam starts as this one ends"
+    );
+  });
+
   it("leaves a comfortable day unmarked", () => {
     const week = entries(
       { label: "STATS C161", exam: WEDNESDAY },

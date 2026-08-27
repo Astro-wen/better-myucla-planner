@@ -232,6 +232,7 @@ if (scenario === "finals") {
         slots: [...root.querySelectorAll(".pl-finals-slot")].map(text),
         placed: [...root.querySelectorAll(".pl-finals-block .pl-finals-code")].map(text),
         tight: [...root.querySelectorAll(".pl-finals-tight")].map(text),
+        clash: [...root.querySelectorAll(".pl-finals-clash-note")].map(text),
         unplaced: [...root.querySelectorAll(".pl-finals-rest-item")].map(text),
         // The page must not scroll sideways because of us.
         bodyOverflows: document.body.scrollWidth > document.documentElement.clientWidth

@@ -1024,6 +1024,33 @@ html.pl-boot #ctl00_MainContent_classPlanPanel {
   white-space: nowrap;
 }
 
+/* Two exams over the top of each other. Not a hard day — an impossible one,
+   and the only thing on this calendar that has to be taken to a department
+   rather than revised around. Louder than the gap warning for that reason. */
+.pl-finals-clash {
+  border-left-color: var(--pl-danger);
+  background: #fbe9eb;
+}
+
+.pl-finals-clash .pl-finals-code { color: var(--pl-danger); }
+
+.pl-finals-clash-note {
+  display: block;
+  margin-top: 1px;
+  color: var(--pl-danger);
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+/* The page's own warning glyph. It carries no meaning on its own: the sentence
+   beside it says the same thing for anyone whose icon font did not load. */
+.pl-finals-icon {
+  margin-right: 3px;
+  font-style: normal;
+}
+
 /* An hour or less between two exams on one day. The grid shows the day; this
    says what the day is going to feel like. */
 .pl-finals-tight {

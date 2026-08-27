@@ -26,6 +26,8 @@ interface PlacedExam extends FinalsEntry {
   endMinutes: number;
   /** Minutes to the next exam that day, when that gap is short enough to hurt. */
   gapAfter: number | null;
+  /** Classes whose exam runs over the top of this one. */
+  clashWith: string[];
 }
 
 const SHORT_DAY = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -97,7 +99,17 @@ function readSlots(placed: PlacedExam[]): { startMinutes: number; endMinutes: nu
   );
 }
 
-function markTightGaps(placed: PlacedExam[]): void {
+/**
+ * Two exams that overlap and two exams half an hour apart are different kinds
+ * of news. The second is a hard day. The first cannot happen — a student cannot
+ * sit two exams at once, so an overlap is something to take to the department
+ * now, not to revise around.
+ *
+ * The overlap is arithmetic on the two lines the page already printed, and both
+ * blocks are visible in the same column, so nothing here is an inference the
+ * student cannot check by looking.
+ */
+function markDayPressure(placed: PlacedExam[]): void {
   const byDay = new Map<string, PlacedExam[]>();
   placed.forEach((exam) => {
     const list = byDay.get(exam.day) || [];
@@ -107,9 +119,21 @@ function markTightGaps(placed: PlacedExam[]): void {
 
   byDay.forEach((list) => {
     list.sort((a, b) => a.startMinutes - b.startMinutes);
+
+    list.forEach((exam, index) => {
+      list.forEach((other, otherIndex) => {
+        if (index === otherIndex) return;
+        const overlaps =
+          exam.startMinutes < other.endMinutes && other.startMinutes < exam.endMinutes;
+        if (overlaps && !exam.clashWith.includes(other.label)) exam.clashWith.push(other.label);
+      });
+    });
+
     list.forEach((exam, index) => {
       const next = list[index + 1];
       if (!next) return;
+      // An overlap is already reported as an overlap; it is not also a gap.
+      if (exam.clashWith.length > 0 || next.clashWith.length > 0) return;
       const gap = next.startMinutes - exam.endMinutes;
       if (gap >= 0 && gap <= TIGHT_GAP_MINUTES) exam.gapAfter = gap;
     });
@@ -135,6 +159,19 @@ function buildBlock(doc: Document, exam: PlacedExam): HTMLElement {
   // decides how it reads.
   block.append(element(doc, "span", "pl-finals-when", exam.exam.timeText || exam.exam.text));
   block.title = exam.exam.text;
+
+  if (exam.clashWith.length > 0) {
+    block.classList.add("pl-finals-clash");
+    const warning = element(doc, "span", "pl-finals-clash-note");
+    // MyUCLA's own icon font, the same one its `planConflict` markers use.
+    const icon = element(doc, "span", "icon-warning-sign pl-finals-icon");
+    icon.setAttribute("aria-hidden", "true");
+    warning.append(icon);
+    warning.append(
+      doc.createTextNode(`Same time as ${exam.clashWith.join(", ")}`)
+    );
+    block.append(warning);
+  }
 
   if (exam.gapAfter !== null) {
     block.classList.add("pl-finals-tight");
@@ -198,7 +235,8 @@ export function buildFinalsWeek(entries: FinalsEntry[], doc: Document = document
         day: entry.exam.day as string,
         startMinutes: entry.exam.startMinutes as number,
         endMinutes: entry.exam.endMinutes as number,
-        gapAfter: null
+        gapAfter: null,
+        clashWith: []
       });
     } else {
       unplaced.push(entry);
@@ -230,7 +268,7 @@ export function buildFinalsWeek(entries: FinalsEntry[], doc: Document = document
   const onGrid = placed.filter((exam) => inWeek.has(exam.day));
   strays.forEach((exam) => unplaced.push(exam));
 
-  markTightGaps(onGrid);
+  markDayPressure(onGrid);
   const slots = readSlots(onGrid);
 
   const table = element(doc, "table", "pl-finals-grid");
