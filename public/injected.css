@@ -14,6 +14,8 @@
 .pl-conflict-badge,
 .pl-topbar,
 .pl-jump,
+.pl-finals-host,
+.pl-finals,
 .pl-plan-root {
   --pl-font: ProximaNova, Verdana, sans-serif;
   --pl-blue: #0055a6;
@@ -917,3 +919,164 @@ html.pl-boot #ctl00_MainContent_classPlanPanel {
 
   html.pl-boot #ctl00_MainContent_classPlanPanel { animation-duration: 0.01ms !important; }
 }
+
+/* Finals week. MyUCLA's own grid on this page draws the ten teaching weeks;
+   this draws the one week nothing else does. Seven day columns because UCLA's
+   finals week runs Saturday to Friday, and the rows are whatever slots the plan
+   actually uses rather than a hardcoded table of exam times. */
+
+.pl-finals-host {
+  margin: 0 0 12px;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--pl-line);
+  border-radius: var(--pl-radius);
+  background: var(--pl-surface);
+}
+
+.pl-finals-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.pl-finals-title {
+  margin: 0;
+  color: var(--pl-blue);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.pl-finals-scroll { overflow-x: auto; }
+
+.pl-finals-grid {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: separate;
+  border-spacing: 2px;
+  table-layout: fixed;
+}
+
+.pl-finals-corner { width: 82px; }
+
+.pl-finals-day {
+  padding: 4px 3px;
+  border-radius: 4px;
+  background: var(--pl-blue-dark);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.pl-finals-dayname,
+.pl-finals-daydate { display: block; }
+.pl-finals-daydate { font-weight: 400; opacity: 0.82; }
+
+.pl-finals-slot {
+  padding: 4px 6px;
+  color: var(--pl-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: right;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.pl-finals-cell {
+  height: 46px;
+  padding: 2px;
+  border-radius: 4px;
+  background: var(--pl-cell);
+  vertical-align: top;
+}
+
+.pl-finals-free { background: var(--pl-line-soft); }
+
+.pl-finals-block {
+  display: block;
+  padding: 4px 5px;
+  border-left: 3px solid var(--pl-blue);
+  border-radius: 3px;
+  background: var(--pl-surface);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.pl-finals-block + .pl-finals-block { margin-top: 2px; }
+
+.pl-finals-code {
+  display: block;
+  overflow: hidden;
+  color: var(--pl-blue);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pl-finals-when {
+  display: block;
+  overflow: hidden;
+  color: var(--pl-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* An hour or less between two exams on one day. The grid shows the day; this
+   says what the day is going to feel like. */
+.pl-finals-tight {
+  border-left-color: var(--pl-warn);
+  background: var(--pl-warn-bg);
+}
+
+.pl-finals-gap {
+  display: block;
+  margin-top: 1px;
+  color: var(--pl-warn);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.pl-finals-empty {
+  margin: 0;
+  color: var(--pl-muted);
+  font-size: 12px;
+}
+
+/* Anything the exam line did not give up. Never dropped: a class missing from
+   this list reads as a class with no exam. */
+.pl-finals-rest {
+  margin-top: 10px;
+  padding-top: 9px;
+  border-top: 1px solid var(--pl-line-soft);
+}
+
+.pl-finals-rest-title {
+  margin: 0 0 5px;
+  color: var(--pl-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.pl-finals-rest-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pl-finals-rest-item {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 2px 0;
+  font-size: 11.5px;
+}
+
+.pl-finals-rest-item .pl-finals-code,
+.pl-finals-rest-item .pl-finals-when { display: inline; white-space: normal; }
+
+.pl-menu-quiet:hover { background: var(--pl-cell) !important; color: var(--pl-blue) !important; }

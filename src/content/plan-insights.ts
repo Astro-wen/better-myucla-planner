@@ -24,6 +24,10 @@ export interface FinalExam {
    * is drawn; they never replace the text.
    */
   text: string;
+  /** `Wednesday December 9, 2026`, sliced out of `text`, never rebuilt. */
+  dateText: string | null;
+  /** `8am-11am`, sliced out of `text`, never rebuilt. */
+  timeText: string | null;
   /** Calendar day as `YYYY-MM-DD`, or null when this is not a dated exam. */
   day: string | null;
   /** Minutes from midnight. Null whenever `day` is null. */
@@ -88,10 +92,19 @@ const WEEKDAYS = [
 ];
 
 const EXAM_LABEL = /^\s*Final\s+Exam\s*:\s*/i;
+// The outer groups exist so the date and the time can be *sliced* out of
+// MyUCLA's own sentence rather than rebuilt from the parsed numbers. Nothing
+// downstream ever prints a date this file assembled.
 const EXAM_LINE =
-  /^([A-Za-z]+)\s+([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s+(\d{1,2}(?::\d{2})?)\s*([ap])m\s*-\s*(\d{1,2}(?::\d{2})?)\s*([ap])m$/;
+  /^(([A-Za-z]+)\s+([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4}))\s+((\d{1,2}(?::\d{2})?)\s*([ap])m\s*-\s*(\d{1,2}(?::\d{2})?)\s*([ap])m)$/;
 
-const UNPLACED = { day: null, startMinutes: null, endMinutes: null };
+const UNPLACED = {
+  dateText: null,
+  timeText: null,
+  day: null,
+  startMinutes: null,
+  endMinutes: null
+};
 
 function toMinutes(clock: string, half: string): number | null {
   const [rawHour, rawMinute = "0"] = clock.split(":");
@@ -119,8 +132,19 @@ function parseExamLine(line: string): Omit<FinalExam, "text"> {
   const match = EXAM_LINE.exec(line);
   if (!match) return UNPLACED;
 
-  const [, weekday, monthName, dayOfMonth, year, startClock, startHalf, endClock, endHalf] =
-    match;
+  const [
+    ,
+    dateText,
+    weekday,
+    monthName,
+    dayOfMonth,
+    year,
+    timeText,
+    startClock,
+    startHalf,
+    endClock,
+    endHalf
+  ] = match;
   const month = MONTHS.indexOf(monthName.toLowerCase());
   if (month < 0) return UNPLACED;
 
@@ -140,6 +164,8 @@ function parseExamLine(line: string): Omit<FinalExam, "text"> {
   }
 
   return {
+    dateText,
+    timeText,
     day: `${year}-${pad(month + 1)}-${pad(Number(dayOfMonth))}`,
     startMinutes,
     endMinutes

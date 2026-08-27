@@ -200,6 +200,8 @@ describe("readFinalExam", () => {
 
     expect(exam).toEqual({
       text: "Wednesday December 9, 2026 8am-11am",
+      dateText: "Wednesday December 9, 2026",
+      timeText: "8am-11am",
       day: "2026-12-09",
       startMinutes: 8 * 60,
       endMinutes: 11 * 60
@@ -221,6 +223,8 @@ describe("readFinalExam", () => {
 
     expect(exam).toEqual({
       text: "Consult instructor for method of evaluation",
+      dateText: null,
+      timeText: null,
       day: null,
       startMinutes: null,
       endMinutes: null

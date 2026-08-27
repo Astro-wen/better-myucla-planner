@@ -15,12 +15,14 @@ import { releaseBootHold } from "./boot-hold";
 import {
   applyHeadline,
   markHeaderRows,
+  readHeadline,
   restoreHeadline,
   restoreWeekGrid,
   tidyWeekGrid,
   unmarkHeaderRows
 } from "./page-polish";
 import { FastReorderCoordinator } from "./fast-reorder";
+import { buildFinalsWeek, type FinalsEntry } from "./finals-week";
 import {
   conflictCodes,
   inspectCourse,
@@ -477,9 +479,12 @@ export class MyUclaPlannerController {
     limitLink.target = "_blank";
     limitLink.rel = "noopener noreferrer";
     limitLink.textContent = "Enrollment passes and unit limits";
+    const finalsButton = this.createActionButton("finals", "Final exam week");
+    finalsButton.className = "pl-menu-item pl-menu-quiet";
+    finalsButton.title = "Every final exam in this plan, drawn as one week";
     const clearButton = this.createActionButton("clear-all-annotations", "Delete all my notes");
     clearButton.className = "pl-menu-item";
-    menu.append(note, limitLink, clearButton);
+    menu.append(note, finalsButton, limitLink, clearButton);
     menuWrap.append(menuButton, menu);
 
     main.append(search, count, collapseButton, menuWrap);
@@ -1635,6 +1640,50 @@ export class MyUclaPlannerController {
     this.applyViewState();
   };
 
+  /**
+   * Finals week on one week. Read-only, built from the `Final Exam:` line each
+   * card already carries, and thrown away again on the next toggle. It is not a
+   * second copy of MyUCLA's weekly grid: that one draws the ten teaching weeks,
+   * and nothing on this page draws finals week at all.
+   */
+  private toggleFinalsWeek(): void {
+    const open = document.querySelector<HTMLElement>("[data-pl-finals]");
+    if (open) {
+      open.remove();
+      return;
+    }
+
+    const root = this.adapter.getRoot();
+    if (!root || !root.parentElement) return;
+
+    const entries: FinalsEntry[] = [];
+    this.courses.forEach((course) => {
+      const insight = this.insights.get(course.id) || inspectCourse(course);
+      if (!insight.finalExam) return;
+      // The code a student scans for, when the two paragraphs parse. The full
+      // official label otherwise, rather than a guess at a shorter one.
+      const headline = readHeadline(this.adapter.getLabelHost(course));
+      entries.push({ label: headline ? headline.code : course.label, exam: insight.finalExam });
+    });
+
+    const panel = document.createElement("div");
+    panel.className = "pl-finals-host";
+    panel.dataset.plFinals = "true";
+
+    const bar = document.createElement("div");
+    bar.className = "pl-finals-bar";
+    const title = document.createElement("h3");
+    title.className = "pl-finals-title";
+    title.textContent = "Final exam week";
+    const close = this.createActionButton("close-finals", "Close");
+    close.className = "pl-ghost";
+    bar.append(title, close);
+
+    panel.append(bar, buildFinalsWeek(entries));
+    root.parentElement.insertBefore(panel, root);
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
   private onClick = (event: MouseEvent): void => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -1678,6 +1727,14 @@ export class MyUclaPlannerController {
       if (!menu) return;
       menu.hidden = !menu.hidden;
       button.setAttribute("aria-expanded", String(!menu.hidden));
+      return;
+    }
+    if (action === "finals") {
+      this.toggleFinalsWeek();
+      return;
+    }
+    if (action === "close-finals") {
+      document.querySelector("[data-pl-finals]")?.remove();
       return;
     }
     if (action === "clear-all-annotations") {

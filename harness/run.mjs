@@ -8,6 +8,7 @@
  *   idle      first paint, nothing touched
  *   position  change one card's position control and screenshot the result
  *   top       press "move to top" on an off-screen card
+ *   finals    open the final exam week panel and read what it placed
  */
 
 import { mkdir, readFile } from "node:fs/promises";
@@ -209,6 +210,36 @@ if (scenario === "drag") {
   );
   await shot("after");
   console.log({ startScroll, scrollWhileHeld: held, scrolledBy: held - startScroll, fromIndex: grip.index, landedIndex: landed });
+}
+
+if (scenario === "finals") {
+  await page.click('[data-pl-action="menu"]');
+  await page.waitForTimeout(150);
+  await page.click('[data-pl-action="finals"]');
+  await page.waitForTimeout(500);
+
+  const panel = await page.$("[data-pl-finals]");
+  if (!panel) throw new Error("The finals panel did not open.");
+  await panel.screenshot({ path: resolve(outDir, "finals-panel.png") });
+  console.log("screenshot", resolve(outDir, "finals-panel.png"));
+
+  console.log(
+    await page.evaluate(() => {
+      const root = document.querySelector("[data-pl-finals]");
+      const text = (node) => (node?.textContent || "").replace(/\s+/g, " ").trim();
+      return {
+        days: [...root.querySelectorAll(".pl-finals-day")].map(text),
+        slots: [...root.querySelectorAll(".pl-finals-slot")].map(text),
+        placed: [...root.querySelectorAll(".pl-finals-block .pl-finals-code")].map(text),
+        tight: [...root.querySelectorAll(".pl-finals-tight")].map(text),
+        unplaced: [...root.querySelectorAll(".pl-finals-rest-item")].map(text),
+        // The page must not scroll sideways because of us.
+        bodyOverflows: document.body.scrollWidth > document.documentElement.clientWidth
+      };
+    })
+  );
+
+  await shot("page");
 }
 
 await browser.close();
