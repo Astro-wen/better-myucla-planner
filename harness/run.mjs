@@ -153,7 +153,17 @@ if (scenario === "default" || scenario === "tidy") {
       visibleHeaderRows: [...document.querySelectorAll("table.coursetable tr")].filter(
         (r) => [...r.cells].every((c) => c.tagName === "TH") && r.getClientRects().length > 0
       ).length,
-      tidyGridBlocks: document.querySelectorAll('#gridDiv .planneritembox[data-pl-grid="tidy"]').length
+      tidyGridBlocks: document.querySelectorAll('#gridDiv .planneritembox[data-pl-grid="tidy"]').length,
+      finalsToggle: (() => {
+        const t = document.getElementById('planner-lift-finals-toggle');
+        if (!t) return null;
+        return {
+          inNativeRow: Boolean(t.closest('.classPlanner_SectionMenu')),
+          after: t.previousElementSibling?.id ?? null,
+          label: (t.textContent || '').replace(/\s+/g, ' ').trim(),
+          checked: t.querySelector('.icon-check') ? 'on' : 'off'
+        };
+      })()
     }))
   );
 }
@@ -210,6 +220,29 @@ if (scenario === "drag") {
   );
   await shot("after");
   console.log({ startScroll, scrollWhileHeld: held, scrolledBy: held - startScroll, fromIndex: grip.index, landedIndex: landed });
+}
+
+if (scenario === "tidy") {
+  // The switch only exists with the layout switch on, and it is ours: it opens
+  // a panel on this page and sends nothing.
+  const before = await page.evaluate(() => ({
+    requests: 0,
+    panel: Boolean(document.querySelector("[data-pl-finals]"))
+  }));
+  let posted = 0;
+  page.on("request", () => (posted += 1));
+  await page.click("#planner-lift-finals-toggle button");
+  await page.waitForTimeout(600);
+  console.log({
+    before,
+    afterClick: await page.evaluate(() => ({
+      panel: Boolean(document.querySelector("[data-pl-finals]")),
+      checked: document.querySelector("#planner-lift-finals-toggle .icon-check") ? "on" : "off",
+      exams: document.querySelectorAll(".pl-finals-block").length
+    })),
+    requestsMade: posted
+  });
+  await shot("finals-toggle");
 }
 
 if (scenario === "finals") {

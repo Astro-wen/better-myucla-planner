@@ -118,6 +118,27 @@ function card(course, index, total) {
   <tbody class="course_divider"><tr><td colspan="2">&nbsp;</td></tr></tbody>`;
 }
 
+/**
+ * MyUCLA's row of display switches above the grid. Modelled on the live page:
+ * the state lives in classes on the container, and each "checkbox" is really
+ * two absolutely positioned buttons, `icon-check` over `icon-check-empty`.
+ * See `docs/MYUCLA_CONTRACT.md`. The postbacks are inert here.
+ */
+function sectionMenu() {
+  const toggle = (name, label, help) => `<span id="${name}ShowHide">
+      <span> <button id="tip-${name}" onclick="return false;" class="uit-clickover-bottom link" data-content="${help}" style="cursor: pointer;">${label}</button>:</span>
+      <span style="padding-left:5px; padding-right: 1.5em; position: relative;" class="show${name} icontoggle gridsizeicons">
+        <button id="${name}Uncheck" aria-label="unchecked ${label}" style="position: absolute;" class="link ${name}Uncheck" onclick="return false;"><span class="icon-check-empty"></span></button>
+        <button id="${name}Check" aria-label="checked ${label}" style="position: absolute;" class="link ${name}Check" onclick="return false;"><span class="icon-check"></span></button>
+      </span>
+    </span>`;
+  return `<div class="classPlanner_SectionMenu plannerMenuLinks checkboxStateHolder studylistChecked planChecked">
+    ${toggle("studylist", "Study List", "enrolled/waitlisted classes appear with a double border")}
+    ${toggle("plan", "Plan", "Planned classes appear with a solid border")}
+    ${toggle("alternates", "Alternates", "Alternates appear with a dashed border")}
+  </div>`;
+}
+
 export function fixtureHtml(count = COURSES.length) {
   const list = COURSES.slice(0, count);
   return `<!doctype html>
@@ -149,6 +170,8 @@ export function fixtureHtml(count = COURSES.length) {
   .icon-arrow-up::before { content:"↑"; }
   .icon-arrow-down::before { content:"↓"; }
   .icon-warning-sign::before { content:"⚠"; }
+  .icon-check::before { content:"☑"; }
+  .icon-check-empty::before { content:"☐"; }
   .icon-lock::before { content:"🔒"; }
   .icon-unlock::before { content:"🔓"; }
   .icon-ok-sign::before { content:"✓"; }
@@ -188,7 +211,7 @@ export function fixtureHtml(count = COURSES.length) {
       </select>
     </label>
     <input id="ctl00_MainContent_planIDField" type="hidden" value="1234567" />
-    <div id="ctl00_MainContent_panelGrid"><div id="gridDiv" class="sgChecked">
+    <div id="ctl00_MainContent_panelGrid">${sectionMenu()}<div id="gridDiv" class="sgChecked">
       <div class="hourbox">8<sup>AM</sup></div>
       <div class="timebox">
         <div class="planneritembox" style="background-color:#ecf8f9 !important;color:#0c5373;border:solid 1px #41b5eb;top:0px;height:48px;left:0;width:120px">ENGR 216<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span><span class="icon-warning-sign planConflict"></span>Physics and Astronomy Building 1425</div>

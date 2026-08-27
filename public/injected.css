@@ -14,6 +14,7 @@
 .pl-conflict-badge,
 .pl-topbar,
 .pl-jump,
+.pl-native-toggle,
 .pl-finals-host,
 .pl-finals,
 .pl-plan-root {
@@ -1129,3 +1130,32 @@ html.pl-boot #ctl00_MainContent_classPlanPanel {
 .pl-finals-rest-item .pl-finals-enrolled-code {
   border-bottom: 3px double var(--pl-line);
 }
+
+/* Our own switch, living in MyUCLA'''s row of display switches beside Study
+   List, Plan and Alternates. Only while the optional layout switch is on, per
+   the rule 0.10.1 settled: MyUCLA'''s markup is opt-in.
+
+   It borrows the row'''s grammar so it does not read as bolted on, and departs
+   from it in exactly one way — the label is our blue rather than MyUCLA'''s link
+   colour, so a student can tell whose control this is. It sends nothing: it
+   opens and closes a panel on this page. */
+.pl-native-toggle {
+  padding-left: 1em;
+  white-space: nowrap;
+}
+
+.pl-native-label {
+  color: var(--pl-blue) !important;
+  font-weight: 600;
+}
+
+.pl-native-box { padding-left: 5px; padding-right: 0.5em; }
+
+.pl-native-check {
+  border: 0 !important;
+  background: none !important;
+  color: var(--pl-blue) !important;
+  cursor: pointer;
+}
+
+.pl-native-on .pl-native-check { color: var(--pl-blue-dark) !important; }
