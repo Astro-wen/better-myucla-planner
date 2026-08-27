@@ -1667,7 +1667,7 @@ export class MyUclaPlannerController {
       entries.push({
         label: headline ? headline.code : course.label,
         exam: insight.finalExam,
-        enrolled: insight.enrolled
+        onStudyList: insight.enrolled || insight.waitlist
       });
     });
 

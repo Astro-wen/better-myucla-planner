@@ -122,21 +122,28 @@ MyUCLA 自己写的 popover HTML：
 
 ## 周历方块的边框就是选课状态（2026-08-27 只读验证）
 
-`#gridDiv .planneritembox` 的 inline style 里，`border` 的样式区分这门课是**已选上**还是**只在计划里**：
+`#gridDiv .planneritembox` 的 inline style 里，`border` 的样式表示这门课属于哪一类。
+**这不是推断，是 MyUCLA 自己在控件的帮助气泡里写的**（`div.classPlanner_SectionMenu`
+里那三个 `uit-clickover-bottom` 按钮的 `data-content`）：
 
-- 已 enroll：`border: double 3px <课程色>`
-- 只在 plan 里：`border: solid 1px <课程色>`
+| 边框 | MyUCLA 的原话 |
+| --- | --- |
+| `double 3px` | enrolled/waitlisted classes appear with a double border |
+| `solid 1px` | Planned classes appear with a solid border |
+| `dashed 1px` | Alternates appear with a dashed border |
 
-在一份 7 门课、20 个方块的真实 plan 上逐个核对，无一例外：四门已选上的课全部是
-`double 3px`，三门只在计划里的全部是 `solid 1px`。
+注意 `double` 是 **enrolled 或 waitlisted**，不是只有 enrolled。在一份 7 门课、
+20 个方块的真实 plan 上逐个核对与上表一致，但那份 plan 里没有 waitlist 的课，
+因此 waitlist 这一半只有 MyUCLA 的原话为证，尚未在真实页面上见过。
 
 同一门课的所有方块颜色一致（`background-color` / `color` / 边框色三个值成套），
 因此颜色可以在**周历内部**把同一门课的方块归为一组。但它不能用来对应到下面的
 课程卡：卡片上没有任何元素带这个颜色，`.colorswatch` 这个选择器在真实页面上不
 存在（返回空集）。
 
-对实现的意义：注入 UI 要表达「已选上 / 还在计划」时，`double` 边框是**页面自己
-已经在用的记号**，学生在周历上已经在读它了。不要另发明一套。
+对实现的意义：注入 UI 要表达「已选上 / 还在计划 / 备选」时，这三种边框是**页面
+自己已经在用的记号**，学生在周历上已经在读它了。不要另发明一套，也不要用同一个
+记号表示别的意思。
 
 样例（脱敏，只保留结构与颜色）：
 
@@ -150,6 +157,24 @@ MyUCLA 自己写的 popover HTML：
 ```
 
 方块本身**没有 id，也没有任何 data 属性**，三行文字依次是课程代号、section、地点。
+
+## 周历上方的三个显示开关（2026-08-27 只读验证）
+
+容器是 `div.classPlanner_SectionMenu.plannerMenuLinks.checkboxStateHolder`，
+当前状态写在容器自己的 class 上：`studylistChecked`、`planChecked`、
+`alternatesChecked`。
+
+每个开关是一个 `span#<name>ShowHide`，里面两段：
+
+1. `<span>` 包一个 `uit-clickover-bottom link` 按钮，按钮文字就是标签（`Study List`
+   / `Plan` / `Alternates`），`onclick="return false"` —— 它只负责弹帮助气泡。
+2. `<span class="show<name> icontoggle gridsizeicons">`，里面**两个绝对定位的按钮
+   叠在一起**：`icon-check-empty` 与 `icon-check`。显示哪一个由容器上的状态 class
+   决定，点击则同时改状态 class 并发 `triggerPostback('<n>|+' / '<n>|-')`。
+
+也就是说这些「复选框」**不是 `input[type=checkbox]`**，是两个叠放的按钮加一次回发。
+注入自己的开关时可以沿用同一套结构和图标，但**不得调用 `triggerPostback`**，
+也不得复用它们的 id。
 
 ## 课程卡的 section 表（2026-08-27 只读验证）
 

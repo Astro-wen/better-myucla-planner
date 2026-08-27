@@ -1113,10 +1113,11 @@ html.pl-boot #ctl00_MainContent_classPlanPanel {
    exam is definitely yours. Two lines rather than a colour, so it survives
    sitting next to the red and amber warnings. `docs/PAIN_POINTS.md` #4.
 
-   Double is not an arbitrary pick. MyUCLA already draws an enrolled class in
-   its own weekly grid with `border: double 3px` and a planned one with
-   `border: solid 1px` — verified across a 20-block plan, see
-   `docs/MYUCLA_CONTRACT.md`. This is the page's own mark, not a new one. */
+   Double is not an arbitrary pick, and the set it marks is not ours either.
+   MyUCLA's own help text says a class you are enrolled in OR waitlisted for is
+   drawn with `border: double 3px`, and a merely planned one with
+   `border: solid 1px`. See `docs/MYUCLA_CONTRACT.md`. This is the page's own
+   mark, used for the page's own set. */
 .pl-finals-block.pl-finals-enrolled {
   border: 3px double var(--pl-blue);
   padding: 3px 4px;

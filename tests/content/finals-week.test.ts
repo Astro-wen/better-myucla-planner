@@ -24,9 +24,9 @@ const FRIDAY_MORNING = exam("2026-12-11", 8 * 60, 11 * 60, "8am-11am");
 const FRIDAY_MIDDAY = exam("2026-12-11", 11 * 60 + 30, 14 * 60 + 30, "11:30am-2:30pm");
 const WEDNESDAY = exam("2026-12-09", 8 * 60, 11 * 60, "8am-11am");
 
-function entries(...list: (Omit<FinalsEntry, "enrolled"> & { enrolled?: boolean })[]): HTMLElement {
+function entries(...list: (Omit<FinalsEntry, "onStudyList"> & { onStudyList?: boolean })[]): HTMLElement {
   return buildFinalsWeek(
-    list.map((entry) => ({ enrolled: false, ...entry })),
+    list.map((entry) => ({ onStudyList: false, ...entry })),
     document
   );
 }
@@ -141,15 +141,21 @@ describe("buildFinalsWeek", () => {
     expect(week.querySelector(".pl-finals-empty")?.textContent).toContain("no week to draw");
   });
 
-  it("rings a class that is already enrolled, and leaves a planned one plain", () => {
+  it("rings a class already on the study list, and leaves a planned one plain", () => {
     const week = entries(
-      { label: "MATH 33B", exam: WEDNESDAY, enrolled: true },
+      { label: "MATH 33B", exam: WEDNESDAY, onStudyList: true },
       { label: "ART 10", exam: exam("2026-12-10", 15 * 60, 18 * 60, "3pm-6pm") }
     );
 
     const rung = [...week.querySelectorAll(".pl-finals-enrolled")];
     expect(rung).toHaveLength(1);
     expect(rung[0].textContent).toContain("MATH 33B");
+  });
+
+  it("rings a waitlisted class too, the way MyUCLA's own grid does", () => {
+    const week = entries({ label: "CHEM 14B", exam: WEDNESDAY, onStudyList: true });
+
+    expect(week.querySelector(".pl-finals-enrolled")?.textContent).toContain("CHEM 14B");
   });
 
   it("says so when the plan carries no final exam line at all", () => {
