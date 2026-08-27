@@ -16,6 +16,21 @@ export interface CourseConflicts {
   exam: string[];
 }
 
+/** One class's final exam, exactly as MyUCLA states it. */
+export interface FinalExam {
+  /**
+   * MyUCLA's own line, verbatim. Exam dates are load-bearing, so this is the
+   * string that gets printed. The parsed fields below only decide where a block
+   * is drawn; they never replace the text.
+   */
+  text: string;
+  /** Calendar day as `YYYY-MM-DD`, or null when this is not a dated exam. */
+  day: string | null;
+  /** Minutes from midnight. Null whenever `day` is null. */
+  startMinutes: number | null;
+  endMinutes: number | null;
+}
+
 export interface CourseInsight {
   officialText: string;
   open: boolean;
@@ -23,6 +38,7 @@ export interface CourseInsight {
   enrolled: boolean;
   closed: boolean;
   conflicts: CourseConflicts;
+  finalExam: FinalExam | null;
 }
 
 const MAX_CONFLICT_ENTRIES = 20;
@@ -61,6 +77,117 @@ export function readConflicts(course: CourseSnapshot): CourseConflicts {
   });
 
   return { time: [...time], exam: [...exam] };
+}
+
+const MONTHS = [
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december"
+];
+const WEEKDAYS = [
+  "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"
+];
+
+const EXAM_LABEL = /^\s*Final\s+Exam\s*:\s*/i;
+const EXAM_LINE =
+  /^([A-Za-z]+)\s+([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s+(\d{1,2}(?::\d{2})?)\s*([ap])m\s*-\s*(\d{1,2}(?::\d{2})?)\s*([ap])m$/;
+
+const UNPLACED = { day: null, startMinutes: null, endMinutes: null };
+
+function toMinutes(clock: string, half: string): number | null {
+  const [rawHour, rawMinute = "0"] = clock.split(":");
+  const hour = Number(rawHour);
+  const minute = Number(rawMinute);
+  if (!Number.isInteger(hour) || !Number.isInteger(minute)) return null;
+  if (hour < 1 || hour > 12 || minute > 59) return null;
+  return ((hour % 12) + (half === "p" ? 12 : 0)) * 60 + minute;
+}
+
+function pad(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
+/**
+ * `Wednesday December 9, 2026 8am-11am`. No comma after the weekday, the year
+ * present, no dash before the time — MyUCLA's format, verified on the live page
+ * on 2026-08-27 and mirrored in `harness/fixture.mjs`.
+ *
+ * Anything that does not match exactly is left unplaced rather than guessed at.
+ * A block drawn on the wrong day is worse than a block the view admits it
+ * cannot place.
+ */
+function parseExamLine(line: string): Omit<FinalExam, "text"> {
+  const match = EXAM_LINE.exec(line);
+  if (!match) return UNPLACED;
+
+  const [, weekday, monthName, dayOfMonth, year, startClock, startHalf, endClock, endHalf] =
+    match;
+  const month = MONTHS.indexOf(monthName.toLowerCase());
+  if (month < 0) return UNPLACED;
+
+  const date = new Date(Date.UTC(Number(year), month, Number(dayOfMonth)));
+  // A date that rolls over — February 31 — comes back as a different day.
+  if (date.getUTCMonth() !== month || date.getUTCDate() !== Number(dayOfMonth)) {
+    return UNPLACED;
+  }
+  // MyUCLA prints the weekday and the date as separate facts. When they
+  // disagree there is no way to tell which one is wrong, so neither is trusted.
+  if (WEEKDAYS[date.getUTCDay()] !== weekday.toLowerCase()) return UNPLACED;
+
+  const startMinutes = toMinutes(startClock, startHalf);
+  const endMinutes = toMinutes(endClock, endHalf);
+  if (startMinutes === null || endMinutes === null || endMinutes <= startMinutes) {
+    return UNPLACED;
+  }
+
+  return {
+    day: `${year}-${pad(month + 1)}-${pad(Number(dayOfMonth))}`,
+    startMinutes,
+    endMinutes
+  };
+}
+
+/**
+ * The live page writes the exam line and the location advisory into one
+ * inline-block span, each terminated by a bare `<br>`:
+ *
+ *     <span>Wednesday December 9, 2026 8am-11am<br>Check back on 11/23/2026 …<br></span>
+ *
+ * `textContent` therefore runs them together as `8am-11amCheck back on …`, with
+ * no whitespace to split on. The split has to be structural: everything before
+ * the first `<br>` is the exam, everything after is MyUCLA's note about when the
+ * room will be posted, which is the same sentence on every class.
+ */
+function readExamLine(host: HTMLElement): string {
+  for (const node of [...host.childNodes]) {
+    if (node.nodeName === "BR") break;
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = normalizeText(node.textContent || "");
+      if (text) return text;
+    }
+  }
+  // No `<br>` to split on. The whole span still parses when the advisory is
+  // absent, and fails closed when it is not.
+  return normalizeText(host.textContent || "");
+}
+
+/**
+ * `div.final_exam_info` is on every card — it is layout, not state, and the
+ * `exam_conflict` class riding along with it means nothing. See `readConflicts`
+ * for where real conflicts live.
+ */
+export function readFinalExam(course: CourseSnapshot): FinalExam | null {
+  const info = course.node.querySelector<HTMLElement>(".final_exam_info");
+  if (!info) return null;
+
+  // Two spans on the live page: the bold `Final Exam:` label, then the content.
+  // Any other shape falls back to the container and still fails closed.
+  const spans = [...info.querySelectorAll<HTMLElement>(":scope > span")];
+  const host = spans.length === 2 ? spans[1] : info;
+
+  const text = readExamLine(host).replace(EXAM_LABEL, "").trim();
+  if (!text) return null;
+
+  return { text, ...parseExamLine(text) };
 }
 
 export function hasConflict(insight: CourseInsight): boolean {
@@ -121,7 +248,8 @@ export function inspectCourse(course: CourseSnapshot): CourseInsight {
     // `div.final_exam_info.exam_conflict` wraps the "Final Exam:" line on every
     // card, so the class is layout, not state. Time conflicts carry no class at
     // all — the truth lives in the popover payloads. See `readConflicts`.
-    conflicts: readConflicts(course)
+    conflicts: readConflicts(course),
+    finalExam: readFinalExam(course)
   };
 }
 
