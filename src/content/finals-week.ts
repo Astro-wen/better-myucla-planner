@@ -18,6 +18,8 @@ export interface FinalsEntry {
   /** The course code exactly as the plan list shows it. */
   label: string;
   exam: FinalExam;
+  /** Settled, rather than still being decided. MyUCLA's own word for it. */
+  enrolled: boolean;
 }
 
 interface PlacedExam extends FinalsEntry {
@@ -154,6 +156,9 @@ function element<K extends keyof HTMLElementTagNameMap>(
 
 function buildBlock(doc: Document, exam: PlacedExam): HTMLElement {
   const block = element(doc, "div", "pl-finals-block");
+  // A class you are already enrolled in and a class you are still hoping for
+  // are different things to revise for. `docs/PAIN_POINTS.md` #4.
+  if (exam.enrolled) block.classList.add("pl-finals-enrolled");
   block.append(element(doc, "span", "pl-finals-code", exam.label));
   // MyUCLA's own sentence, verbatim. The grid decides where this sits; it never
   // decides how it reads.
@@ -201,7 +206,9 @@ function buildUnplaced(doc: Document, entries: FinalsEntry[]): HTMLElement {
   const list = element(doc, "ul", "pl-finals-rest-list");
   entries.forEach((entry) => {
     const item = element(doc, "li", "pl-finals-rest-item");
-    item.append(element(doc, "span", "pl-finals-code", entry.label));
+    const code = element(doc, "span", "pl-finals-code", entry.label);
+    if (entry.enrolled) code.classList.add("pl-finals-enrolled-code");
+    item.append(code);
     // Verbatim again: this is exactly what the card says, unread and unedited.
     item.append(element(doc, "span", "pl-finals-when", entry.exam.text));
     list.append(item);

@@ -92,11 +92,28 @@ const WEEKDAYS = [
 ];
 
 const EXAM_LABEL = /^\s*Final\s+Exam\s*:\s*/i;
-// The outer groups exist so the date and the time can be *sliced* out of
-// MyUCLA's own sentence rather than rebuilt from the parsed numbers. Nothing
-// downstream ever prints a date this file assembled.
-const EXAM_LINE =
-  /^(([A-Za-z]+)\s+([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4}))\s+((\d{1,2}(?::\d{2})?)\s*([ap])m\s*-\s*(\d{1,2}(?::\d{2})?)\s*([ap])m)$/;
+const CLOCK = "(\\d{1,2}(?::\\d{2})?)\\s*([ap])m";
+
+/**
+ * MyUCLA writes this line two ways, both seen on the live page:
+ *
+ *     Wednesday December 9, 2026 8am-11am     — weekday unpunctuated, year present
+ *     Wednesday, December 9 - 8am-11am        — weekday comma, no year, dash
+ *
+ * Two exact patterns rather than one loose one. A pattern slack enough to read
+ * both would also read things that are neither, and this file would rather miss
+ * a line it has never seen than place one it misread.
+ *
+ * The outer groups exist so the date and the time can be *sliced* out of
+ * MyUCLA's own sentence rather than rebuilt from the parsed numbers. Nothing
+ * downstream ever prints a date this file assembled.
+ */
+const EXAM_LINE_DATED = new RegExp(
+  `^(([A-Za-z]+)\\s+([A-Za-z]+)\\s+(\\d{1,2}),\\s*(\\d{4}))\\s+(${CLOCK}\\s*-\\s*${CLOCK})$`
+);
+const EXAM_LINE_UNDATED = new RegExp(
+  `^(([A-Za-z]+),\\s+([A-Za-z]+)\\s+(\\d{1,2}))\\s*-\\s*(${CLOCK}\\s*-\\s*${CLOCK})$`
+);
 
 const UNPLACED = {
   dateText: null,
@@ -128,23 +145,18 @@ function pad(value: number): string {
  * A block drawn on the wrong day is worse than a block the view admits it
  * cannot place.
  */
-function parseExamLine(line: string): Omit<FinalExam, "text"> {
-  const match = EXAM_LINE.exec(line);
+function parseExamLine(line: string, termYear: number | null): Omit<FinalExam, "text"> {
+  const dated = EXAM_LINE_DATED.exec(line);
+  const undated = dated ? null : EXAM_LINE_UNDATED.exec(line);
+  const match = dated || undated;
   if (!match) return UNPLACED;
 
-  const [
-    ,
-    dateText,
-    weekday,
-    monthName,
-    dayOfMonth,
-    year,
-    timeText,
-    startClock,
-    startHalf,
-    endClock,
-    endHalf
-  ] = match;
+  // The undated form leaves out the year, so it comes from the term MyUCLA is
+  // already showing. Without a term there is nothing to place it against.
+  const [, dateText, weekday, monthName, dayOfMonth, ...rest] = match;
+  const year = dated ? rest.shift() : termYear === null ? undefined : String(termYear);
+  if (!year) return UNPLACED;
+  const [timeText, startClock, startHalf, endClock, endHalf] = rest;
   const month = MONTHS.indexOf(monthName.toLowerCase());
   if (month < 0) return UNPLACED;
 
@@ -201,7 +213,10 @@ function readExamLine(host: HTMLElement): string {
  * `exam_conflict` class riding along with it means nothing. See `readConflicts`
  * for where real conflicts live.
  */
-export function readFinalExam(course: CourseSnapshot): FinalExam | null {
+export function readFinalExam(
+  course: CourseSnapshot,
+  termYear: number | null = null
+): FinalExam | null {
   const info = course.node.querySelector<HTMLElement>(".final_exam_info");
   if (!info) return null;
 
@@ -213,7 +228,7 @@ export function readFinalExam(course: CourseSnapshot): FinalExam | null {
   const text = readExamLine(host).replace(EXAM_LABEL, "").trim();
   if (!text) return null;
 
-  return { text, ...parseExamLine(text) };
+  return { text, ...parseExamLine(text, termYear) };
 }
 
 export function hasConflict(insight: CourseInsight): boolean {
@@ -256,7 +271,10 @@ function readOfficialText(course: CourseSnapshot): string {
   return normalizeText(parts.join(" "));
 }
 
-export function inspectCourse(course: CourseSnapshot): CourseInsight {
+export function inspectCourse(
+  course: CourseSnapshot,
+  termYear: number | null = null
+): CourseInsight {
   // Status, section, instructor, meeting, and exam data live below the first
   // course-header row. Reading those nodes directly avoids cloning large tables
   // on every search keystroke and also excludes our injected header controls.
@@ -275,7 +293,7 @@ export function inspectCourse(course: CourseSnapshot): CourseInsight {
     // card, so the class is layout, not state. Time conflicts carry no class at
     // all — the truth lives in the popover payloads. See `readConflicts`.
     conflicts: readConflicts(course),
-    finalExam: readFinalExam(course)
+    finalExam: readFinalExam(course, termYear)
   };
 }
 

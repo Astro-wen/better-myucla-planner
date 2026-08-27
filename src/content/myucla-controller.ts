@@ -347,8 +347,9 @@ export class MyUclaPlannerController {
     const effectiveOrder = this.reconcileUnsavedOrder(
       contract.courses.map(({ id }) => id)
     );
+    const termYear = this.adapter.getTermYear();
     this.insights = new Map(
-      contract.courses.map((course) => [course.id, inspectCourse(course)])
+      contract.courses.map((course) => [course.id, inspectCourse(course, termYear)])
     );
     const root = this.adapter.getRoot();
     root?.classList.add("pl-plan-root");
@@ -757,7 +758,7 @@ export class MyUclaPlannerController {
     let visibleCount = 0;
 
     this.courses.forEach((course) => {
-      const insight = this.insights.get(course.id) || inspectCourse(course);
+      const insight = this.insights.get(course.id) || inspectCourse(course, this.adapter.getTermYear());
       const annotation = this.annotations[course.id] || { color: "none", tag: "" };
       const visible = matchesCourse(
         insight,
@@ -1658,12 +1659,16 @@ export class MyUclaPlannerController {
 
     const entries: FinalsEntry[] = [];
     this.courses.forEach((course) => {
-      const insight = this.insights.get(course.id) || inspectCourse(course);
+      const insight = this.insights.get(course.id) || inspectCourse(course, this.adapter.getTermYear());
       if (!insight.finalExam) return;
       // The code a student scans for, when the two paragraphs parse. The full
       // official label otherwise, rather than a guess at a shorter one.
       const headline = readHeadline(this.adapter.getLabelHost(course));
-      entries.push({ label: headline ? headline.code : course.label, exam: insight.finalExam });
+      entries.push({
+        label: headline ? headline.code : course.label,
+        exam: insight.finalExam,
+        enrolled: insight.enrolled
+      });
     });
 
     const panel = document.createElement("div");

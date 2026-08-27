@@ -208,6 +208,50 @@ describe("readFinalExam", () => {
     });
   });
 
+  it("reads the undated format too, taking the year from the term", () => {
+    const exam = readFinalExam(
+      course(examRow(`Wednesday, December 9 - 8am-11am<br>${ADVISORY}`)),
+      2026
+    );
+
+    expect(exam).toEqual({
+      text: "Wednesday, December 9 - 8am-11am",
+      dateText: "Wednesday, December 9",
+      timeText: "8am-11am",
+      day: "2026-12-09",
+      startMinutes: 8 * 60,
+      endMinutes: 11 * 60
+    });
+  });
+
+  it("will not place an undated exam when the term year is unknown", () => {
+    const exam = readFinalExam(
+      course(examRow(`Wednesday, December 9 - 8am-11am<br>${ADVISORY}`))
+    );
+
+    expect(exam).toMatchObject({ text: "Wednesday, December 9 - 8am-11am", day: null });
+  });
+
+  it("catches a term year that does not fit the weekday MyUCLA printed", () => {
+    // December 9 is a Wednesday in 2026 but a Thursday in 2027, so the wrong
+    // year cannot quietly draw the exam on the wrong day.
+    const exam = readFinalExam(
+      course(examRow(`Wednesday, December 9 - 8am-11am<br>${ADVISORY}`)),
+      2027
+    );
+
+    expect(exam).toMatchObject({ day: null });
+  });
+
+  it("keeps the other wording for a class with no exam", () => {
+    const exam = readFinalExam(course(examRow("None listed / Consult instructor<br>")));
+
+    expect(exam).toMatchObject({
+      text: "None listed / Consult instructor",
+      day: null
+    });
+  });
+
   it("reads half-hour times on both sides of noon", () => {
     const exam = readFinalExam(
       course(examRow(`Friday December 11, 2026 11:30am-2:30pm<br>${ADVISORY}<br>`))

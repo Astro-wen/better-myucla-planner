@@ -1107,3 +1107,19 @@ html.pl-boot #ctl00_MainContent_classPlanPanel {
 .pl-finals-rest-item .pl-finals-when { display: inline; white-space: normal; }
 
 .pl-menu-quiet:hover { background: var(--pl-cell) !important; color: var(--pl-blue) !important; }
+
+/* Settled, not still being hoped for. MyUCLA states enrolment in one word
+   inside a table cell; on a revision calendar the difference is whether this
+   exam is definitely yours. Two lines rather than a colour, so it survives
+   sitting next to the red and amber warnings. `docs/PAIN_POINTS.md` #4. */
+.pl-finals-block.pl-finals-enrolled {
+  border: 3px double var(--pl-blue);
+  padding: 3px 4px;
+}
+
+.pl-finals-block.pl-finals-enrolled.pl-finals-tight { border-color: var(--pl-warn); }
+.pl-finals-block.pl-finals-enrolled.pl-finals-clash { border-color: var(--pl-danger); }
+
+.pl-finals-rest-item .pl-finals-enrolled-code {
+  border-bottom: 3px double var(--pl-line);
+}
