@@ -8,6 +8,7 @@ import {
   formatUnits,
   hasConflict,
   inspectCourse,
+  readFinalExam,
   insightLabels,
   matchesCourse,
   readEnrolledUnits,
@@ -68,7 +69,8 @@ describe("summarizeStatus", () => {
     waitlist: false,
     enrolled: false,
     closed: false,
-    conflicts: { time: [], exam: [] }
+    conflicts: { time: [], exam: [] },
+    finalExam: null
   };
 
   it("prefers the state the student can act on, and admits mixed sections", () => {
@@ -176,5 +178,128 @@ describe("readEnrolledUnits", () => {
   it("formats whole units without a stray decimal", () => {
     expect(formatUnits(12)).toBe("12");
     expect(formatUnits(12.5)).toBe("12.5");
+  });
+});
+
+/**
+ * The exact shape captured read-only from a signed-in Class Planner on
+ * 2026-08-27. Two spans, and every line terminated by a bare `<br>`, so
+ * `textContent` reads `8am-11amCheck back on ...` with nothing to split on.
+ */
+function examRow(body: string): string {
+  return `<tr><td><div class="final_exam_info exam_conflict"><span style="font-weight: bold; ">Final Exam:</span> <span style="display: inline-block; vertical-align: top;">${body}</span></div></td></tr>`;
+}
+
+const ADVISORY = "Check back on 11/23/2026 (Monday of 9th week) for final exam location";
+
+describe("readFinalExam", () => {
+  it("keeps MyUCLA's own line and places it on the calendar", () => {
+    const exam = readFinalExam(
+      course(examRow(`Wednesday December 9, 2026 8am-11am<br>${ADVISORY}<br>`))
+    );
+
+    expect(exam).toEqual({
+      text: "Wednesday December 9, 2026 8am-11am",
+      dateText: "Wednesday December 9, 2026",
+      timeText: "8am-11am",
+      day: "2026-12-09",
+      startMinutes: 8 * 60,
+      endMinutes: 11 * 60
+    });
+  });
+
+  it("reads the undated format too, taking the year from the term", () => {
+    const exam = readFinalExam(
+      course(examRow(`Wednesday, December 9 - 8am-11am<br>${ADVISORY}`)),
+      2026
+    );
+
+    expect(exam).toEqual({
+      text: "Wednesday, December 9 - 8am-11am",
+      dateText: "Wednesday, December 9",
+      timeText: "8am-11am",
+      day: "2026-12-09",
+      startMinutes: 8 * 60,
+      endMinutes: 11 * 60
+    });
+  });
+
+  it("will not place an undated exam when the term year is unknown", () => {
+    const exam = readFinalExam(
+      course(examRow(`Wednesday, December 9 - 8am-11am<br>${ADVISORY}`))
+    );
+
+    expect(exam).toMatchObject({ text: "Wednesday, December 9 - 8am-11am", day: null });
+  });
+
+  it("catches a term year that does not fit the weekday MyUCLA printed", () => {
+    // December 9 is a Wednesday in 2026 but a Thursday in 2027, so the wrong
+    // year cannot quietly draw the exam on the wrong day.
+    const exam = readFinalExam(
+      course(examRow(`Wednesday, December 9 - 8am-11am<br>${ADVISORY}`)),
+      2027
+    );
+
+    expect(exam).toMatchObject({ day: null });
+  });
+
+  it("keeps the other wording for a class with no exam", () => {
+    const exam = readFinalExam(course(examRow("None listed / Consult instructor<br>")));
+
+    expect(exam).toMatchObject({
+      text: "None listed / Consult instructor",
+      day: null
+    });
+  });
+
+  it("reads half-hour times on both sides of noon", () => {
+    const exam = readFinalExam(
+      course(examRow(`Friday December 11, 2026 11:30am-2:30pm<br>${ADVISORY}<br>`))
+    );
+
+    expect(exam).toMatchObject({ startMinutes: 11 * 60 + 30, endMinutes: 14 * 60 + 30 });
+  });
+
+  it("keeps a class with no dated exam, and does not pretend it has one", () => {
+    const exam = readFinalExam(
+      course(examRow("Consult instructor for method of evaluation<br>"))
+    );
+
+    expect(exam).toEqual({
+      text: "Consult instructor for method of evaluation",
+      dateText: null,
+      timeText: null,
+      day: null,
+      startMinutes: null,
+      endMinutes: null
+    });
+  });
+
+  it("leaves a line unplaced when the weekday and the date disagree", () => {
+    // December 9 2026 is a Wednesday. One of these two facts is wrong and there
+    // is no way to tell which, so the exam is kept and not drawn.
+    const exam = readFinalExam(
+      course(examRow(`Tuesday December 9, 2026 8am-11am<br>${ADVISORY}<br>`))
+    );
+
+    expect(exam).toMatchObject({ text: "Tuesday December 9, 2026 8am-11am", day: null });
+  });
+
+  it("leaves a line unplaced when it ends before it starts", () => {
+    const exam = readFinalExam(course(examRow("Friday December 11, 2026 3pm-11am<br>")));
+
+    expect(exam).toMatchObject({ day: null, startMinutes: null });
+  });
+
+  it("does not read the location advisory as part of the exam", () => {
+    const exam = readFinalExam(
+      course(examRow(`Friday December 11, 2026 8am-11am<br>${ADVISORY}<br>`))
+    );
+
+    expect(exam?.text).not.toContain("Check back");
+  });
+
+  it("returns null when the card has no final exam line at all", () => {
+    expect(readFinalExam(course("<tr><td>Open: 4 of 100 Left</td></tr>"))).toBeNull();
   });
 });

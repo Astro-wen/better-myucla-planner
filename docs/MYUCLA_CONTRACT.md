@@ -120,6 +120,77 @@ MyUCLA 自己写的 popover HTML：
 
 注意：同一份 plan 内 `tip-*` 这些 id 会重复，不可作为唯一键。
 
+## 周历方块的边框就是选课状态（2026-08-27 只读验证）
+
+`#gridDiv .planneritembox` 的 inline style 里，`border` 的样式表示这门课属于哪一类。
+**这不是推断，是 MyUCLA 自己在控件的帮助气泡里写的**（`div.classPlanner_SectionMenu`
+里那三个 `uit-clickover-bottom` 按钮的 `data-content`）：
+
+| 边框 | MyUCLA 的原话 |
+| --- | --- |
+| `double 3px` | enrolled/waitlisted classes appear with a double border |
+| `solid 1px` | Planned classes appear with a solid border |
+| `dashed 1px` | Alternates appear with a dashed border |
+
+注意 `double` 是 **enrolled 或 waitlisted**，不是只有 enrolled。在一份 7 门课、
+20 个方块的真实 plan 上逐个核对与上表一致，但那份 plan 里没有 waitlist 的课，
+因此 waitlist 这一半只有 MyUCLA 的原话为证，尚未在真实页面上见过。
+
+同一门课的所有方块颜色一致（`background-color` / `color` / 边框色三个值成套），
+因此颜色可以在**周历内部**把同一门课的方块归为一组。但它不能用来对应到下面的
+课程卡：卡片上没有任何元素带这个颜色，`.colorswatch` 这个选择器在真实页面上不
+存在（返回空集）。
+
+对实现的意义：注入 UI 要表达「已选上 / 还在计划 / 备选」时，这三种边框是**页面
+自己已经在用的记号**，学生在周历上已经在读它了。不要另发明一套，也不要用同一个
+记号表示别的意思。
+
+样例（脱敏，只保留结构与颜色）：
+
+```html
+<div style="background-color: #F9F9EC !important; color: #605F20;
+            border: double 3px #CECD6B; top: 48px; left: 0%;
+            width: calc(100% - 7px); height: 35px;"
+     class="planneritembox smallitem">MGMT 170<br class="hide-small"><span
+     class="hide-above-small"> </span>Lec 1<br class="hide-small"><span
+     class="hide-above-small"> </span>Entrepreneurs Hall C314</div>
+```
+
+方块本身**没有 id，也没有任何 data 属性**，三行文字依次是课程代号、section、地点。
+
+## 周历上方的三个显示开关（2026-08-27 只读验证）
+
+容器是 `div.classPlanner_SectionMenu.plannerMenuLinks.checkboxStateHolder`，
+当前状态写在容器自己的 class 上：`studylistChecked`、`planChecked`、
+`alternatesChecked`。
+
+每个开关是一个 `span#<name>ShowHide`，里面两段：
+
+1. `<span>` 包一个 `uit-clickover-bottom link` 按钮，按钮文字就是标签（`Study List`
+   / `Plan` / `Alternates`），`onclick="return false"` —— 它只负责弹帮助气泡。
+2. `<span class="show<name> icontoggle gridsizeicons">`，里面**两个绝对定位的按钮
+   叠在一起**：`icon-check-empty` 与 `icon-check`。显示哪一个由容器上的状态 class
+   决定，点击则同时改状态 class 并发 `triggerPostback('<n>|+' / '<n>|-')`。
+
+也就是说这些「复选框」**不是 `input[type=checkbox]`**，是两个叠放的按钮加一次回发。
+注入自己的开关时可以沿用同一套结构和图标，但**不得调用 `triggerPostback`**，
+也不得复用它们的 id。
+
+## 课程卡的 section 表（2026-08-27 只读验证）
+
+`tbody.courseItem` 第三行里的 `table.coursetable` 是九列：
+
+```
+Change | Section | Status | Info | Days | Time | Location | Units | Instructor
+```
+
+`Section` 与 `Location` 两列的写法和周历方块的第二、三行**逐字一致**（`Act 1` /
+`Entrepreneurs Hall C314`），而周历方块的课程代号用缩写（`MGMT 170`），
+卡片标题用全称（`Management 170`）——**课号部分两边相同，只有学科名不同**。
+
+表格最后一行是 Plan Actions / Enrollment Actions，其中包含 **Enroll 按钮**。任何
+注入行为都不得触碰这一行。
+
 ## 会话超时：只补在场信号，不做后台心跳
 
 `IWE/js/Timeout.js` 的事实：

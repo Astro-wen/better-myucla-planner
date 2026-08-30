@@ -15,12 +15,14 @@ import { releaseBootHold } from "./boot-hold";
 import {
   applyHeadline,
   markHeaderRows,
+  readHeadline,
   restoreHeadline,
   restoreWeekGrid,
   tidyWeekGrid,
   unmarkHeaderRows
 } from "./page-polish";
 import { FastReorderCoordinator } from "./fast-reorder";
+import { buildFinalsWeek, type FinalsEntry } from "./finals-week";
 import {
   conflictCodes,
   inspectCourse,
@@ -40,6 +42,7 @@ const TOOLBAR_ID = "planner-lift-toolbar";
 const ACTIONBAR_ID = "planner-lift-actionbar";
 const TOPBAR_ID = "planner-lift-topbar";
 const JUMP_ID = "planner-lift-jump";
+const FINALS_TOGGLE_ID = "planner-lift-finals-toggle";
 const RESUME_KEY = "plannerLift.afterSync.v1";
 /** Rough cost of one MyUCLA postback, used only to phrase the wait in seconds. */
 const SECONDS_PER_STEP = 1.2;
@@ -266,6 +269,7 @@ export class MyUclaPlannerController {
     this.tidyLayout = tidy;
     if (!tidy) {
       restoreWeekGrid(document);
+      document.getElementById(FINALS_TOGGLE_ID)?.remove();
       restoreHeadline(document);
       unmarkHeaderRows(document);
     }
@@ -345,8 +349,9 @@ export class MyUclaPlannerController {
     const effectiveOrder = this.reconcileUnsavedOrder(
       contract.courses.map(({ id }) => id)
     );
+    const termYear = this.adapter.getTermYear();
     this.insights = new Map(
-      contract.courses.map((course) => [course.id, inspectCourse(course)])
+      contract.courses.map((course) => [course.id, inspectCourse(course, termYear)])
     );
     const root = this.adapter.getRoot();
     root?.classList.add("pl-plan-root");
@@ -360,6 +365,7 @@ export class MyUclaPlannerController {
       // re-rendered by its own toggles, so it is re-checked on every pass.
       tidyWeekGrid(document);
     }
+    this.ensureFinalsToggle();
     const byId = new Map(contract.courses.map((course) => [course.id, course]));
     effectiveOrder.forEach((id, index) => {
       const course = byId.get(id);
@@ -477,9 +483,12 @@ export class MyUclaPlannerController {
     limitLink.target = "_blank";
     limitLink.rel = "noopener noreferrer";
     limitLink.textContent = "Enrollment passes and unit limits";
+    const finalsButton = this.createActionButton("finals", "Final exam week");
+    finalsButton.className = "pl-menu-item pl-menu-quiet";
+    finalsButton.title = "Every final exam in this plan, drawn as one week";
     const clearButton = this.createActionButton("clear-all-annotations", "Delete all my notes");
     clearButton.className = "pl-menu-item";
-    menu.append(note, limitLink, clearButton);
+    menu.append(note, finalsButton, limitLink, clearButton);
     menuWrap.append(menuButton, menu);
 
     main.append(search, count, collapseButton, menuWrap);
@@ -752,7 +761,7 @@ export class MyUclaPlannerController {
     let visibleCount = 0;
 
     this.courses.forEach((course) => {
-      const insight = this.insights.get(course.id) || inspectCourse(course);
+      const insight = this.insights.get(course.id) || inspectCourse(course, this.adapter.getTermYear());
       const annotation = this.annotations[course.id] || { color: "none", tag: "" };
       const visible = matchesCourse(
         insight,
@@ -1635,6 +1644,116 @@ export class MyUclaPlannerController {
     this.applyViewState();
   };
 
+  /**
+   * Finals week on one week. Read-only, built from the `Final Exam:` line each
+   * card already carries, and thrown away again on the next toggle. It is not a
+   * second copy of MyUCLA's weekly grid: that one draws the ten teaching weeks,
+   * and nothing on this page draws finals week at all.
+   */
+  private toggleFinalsWeek(): void {
+    const open = document.querySelector<HTMLElement>("[data-pl-finals]");
+    if (open) {
+      open.remove();
+      return;
+    }
+
+    const root = this.adapter.getRoot();
+    if (!root || !root.parentElement) return;
+
+    const entries: FinalsEntry[] = [];
+    this.courses.forEach((course) => {
+      const insight = this.insights.get(course.id) || inspectCourse(course, this.adapter.getTermYear());
+      if (!insight.finalExam) return;
+      // The code a student scans for, when the two paragraphs parse. The full
+      // official label otherwise, rather than a guess at a shorter one.
+      const headline = readHeadline(this.adapter.getLabelHost(course));
+      entries.push({
+        label: headline ? headline.code : course.label,
+        exam: insight.finalExam,
+        onStudyList: insight.enrolled || insight.waitlist
+      });
+    });
+
+    const panel = document.createElement("div");
+    panel.className = "pl-finals-host";
+    panel.dataset.plFinals = "true";
+
+    const bar = document.createElement("div");
+    bar.className = "pl-finals-bar";
+    const title = document.createElement("h3");
+    title.className = "pl-finals-title";
+    title.textContent = "Final exam week";
+    const close = this.createActionButton("close-finals", "Close");
+    close.className = "pl-ghost";
+    bar.append(title, close);
+
+    panel.append(bar, buildFinalsWeek(entries));
+    root.parentElement.insertBefore(panel, root);
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  /**
+   * A `Final Exams` toggle in MyUCLA's own row of display switches, beside
+   * Study List, Plan and Alternates.
+   *
+   * That row is MyUCLA's markup, so this only exists while the optional layout
+   * switch is on — the rule 0.10.1 settled. It borrows the row's grammar so it
+   * does not read as bolted on, but it is ours and says so: our own id, our own
+   * colour, no `triggerPostback`, and none of MyUCLA's control ids reused. It
+   * sends nothing anywhere; it opens and closes a panel on this page.
+   */
+  private ensureFinalsToggle(): void {
+    const existing = document.getElementById(FINALS_TOGGLE_ID);
+    const menu = document.querySelector<HTMLElement>(".classPlanner_SectionMenu");
+    if (!this.tidyLayout || !menu) {
+      existing?.remove();
+      return;
+    }
+
+    const open = Boolean(document.querySelector("[data-pl-finals]"));
+    if (existing) {
+      this.paintFinalsToggle(existing, open);
+      return;
+    }
+
+    const host = document.createElement("span");
+    host.id = FINALS_TOGGLE_ID;
+    host.className = "pl-native-toggle";
+    host.setAttribute(OWNED_ATTRIBUTE, "true");
+
+    const labelWrap = document.createElement("span");
+    const label = document.createElement("span");
+    label.className = "pl-native-label";
+    label.textContent = "Final Exams";
+    labelWrap.append(" ", label, ":");
+
+    const box = document.createElement("span");
+    box.className = "pl-native-box";
+    const button = this.createActionButton("finals", "");
+    button.className = "link pl-native-check";
+    box.append(button);
+
+    host.append(labelWrap, box);
+    menu.append(host);
+    this.paintFinalsToggle(host, open);
+  }
+
+  private paintFinalsToggle(host: HTMLElement, open: boolean): void {
+    const button = host.querySelector<HTMLButtonElement>(".pl-native-check");
+    if (!button) return;
+    button.textContent = "";
+    // MyUCLA's own tick glyphs, from the icon font this page already loads.
+    button.append(makeIcon(open ? "icon-check" : "icon-check-empty"));
+    button.setAttribute(
+      "aria-label",
+      open
+        ? "checked - final exam week is shown below the plan"
+        : "unchecked - show final exam week below the plan"
+    );
+    button.setAttribute("aria-pressed", String(open));
+    host.classList.toggle("pl-native-on", open);
+  }
+
   private onClick = (event: MouseEvent): void => {
     const target = event.target;
     if (!(target instanceof Element)) return;
@@ -1678,6 +1797,16 @@ export class MyUclaPlannerController {
       if (!menu) return;
       menu.hidden = !menu.hidden;
       button.setAttribute("aria-expanded", String(!menu.hidden));
+      return;
+    }
+    if (action === "finals") {
+      this.toggleFinalsWeek();
+      this.ensureFinalsToggle();
+      return;
+    }
+    if (action === "close-finals") {
+      document.querySelector("[data-pl-finals]")?.remove();
+      this.ensureFinalsToggle();
       return;
     }
     if (action === "clear-all-annotations") {

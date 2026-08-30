@@ -16,22 +16,22 @@ const COMMAND = "ctl00_MainContent_planClassListView_clCommandField";
 
 export const COURSES = [
   { subject: "Russian", number: "C124C", title: "Studies in Russian Literature: Chekhov", status: "waitlist", statusText: "Waitlist: 0 of 5 Taken", days: "TR", time: "12:30pm-1:45pm", location: "Royce Hall 152", units: "4.0", instructor: "Furman, Y.", rating: "5.0", color: "#b5cf6b", final: "None listed / Consult instructor" },
-  { subject: "French", number: "1", title: "Elementary French", status: "closed", statusText: "Closed Class Full (28)", days: "TR", time: "9:30am-10:45am", location: "Online", units: "4.0", instructor: "Von Zur Muehlen, E<br>Rushing, R.A.", rating: "N/A", color: "#e8262b", final: "None listed / Consult instructor" },
-  { subject: "Statistics", number: "C161", title: "Introduction to Machine Learning and Artificial Intelligence", status: "open", statusText: "Open: 12 of 150 Left", days: "MW", time: "10:00am-11:15am", location: "Franz Hall 1178", units: "4.0", instructor: "Wu, Y.N.", rating: "4.2", color: "#7b2d8e", final: "Monday, December 7 - 8am-11am", conflicts: ["STATS 100A"] },
-  { subject: "Com Sci", number: "35L", title: "Software Construction", status: "closed", statusText: "Closed Class Full (120)", days: "MW", time: "2:00pm-3:50pm", location: "Boelter Hall 3400", units: "3.0", instructor: "Eggert, P.R.", rating: "3.4", color: "#2b7fb8", final: "Wednesday, December 9 - 3pm-6pm" },
-  { subject: "Ling", number: "1", title: "Introduction to Study of Language", status: "open", statusText: "Open: 40 of 250 Left", days: "TR", time: "11:00am-12:15pm", location: "Haines Hall 39", units: "5.0", instructor: "Sportiche, D.", rating: "4.8", color: "#3f9c5b", final: "Thursday, December 10 - 8am-11am" },
-  { subject: "Math", number: "33B", title: "Differential Equations", status: "waitlist", statusText: "Waitlist: 3 of 10 Taken", days: "MWF", time: "9:00am-9:50am", location: "MS 5117", units: "4.0", instructor: "Liu, C.", rating: "3.1", color: "#d98f2a", final: "Friday, December 11 - 8am-11am", conflicts: ["PHYSICS 1B"] },
-  { subject: "Physics", number: "1B", title: "Physics for Scientists and Engineers: Oscillations", status: "open", statusText: "Open: 8 of 200 Left", days: "MWF", time: "9:00am-9:50am", location: "Young CS50", units: "5.0", instructor: "Arisaka, K.", rating: "2.9", color: "#8c8c8c", final: "Friday, December 11 - 8am-11am", conflicts: ["MATH 33B"] },
-  { subject: "Psych", number: "10", title: "Introductory Psychology", status: "closed", statusText: "Closed Class Full (400)", days: "TR", time: "2:00pm-3:15pm", location: "Fowler A103B", units: "4.0", instructor: "Fried, I.", rating: "4.4", color: "#c45ca0", final: "Tuesday, December 8 - 3pm-6pm" },
-  { subject: "Econ", number: "11", title: "Microeconomic Theory", status: "enrolled", statusText: "Enrolled Class Full (250)", days: "MW", time: "12:30pm-1:45pm", location: "Rolfe 1200", units: "4.0", instructor: "Buchholz, T.", rating: "3.8", color: "#4a6fb5", final: "Monday, December 7 - 11:30am-2:30pm" },
-  { subject: "Art", number: "10", title: "Drawing and Color", status: "open", statusText: "Open: 2 of 20 Left", days: "F", time: "1:00pm-3:50pm", location: "Broad 2160E", units: "4.0", instructor: "Ryman, W.", rating: "4.9", color: "#e0b93f", final: "None listed / Consult instructor" },
-  { subject: "Hist", number: "1C", title: "Introduction to Western Civilization", status: "open", statusText: "Open: 55 of 120 Left", days: "TR", time: "3:30pm-4:45pm", location: "Dodd 147", units: "5.0", instructor: "Sabean, D.", rating: "3.6", color: "#6ba43a", final: "Thursday, December 10 - 3pm-6pm" },
-  { subject: "Chem", number: "14B", title: "Thermodynamics and Electrochemistry", status: "waitlist", statusText: "Waitlist: 12 of 15 Taken", days: "MWF", time: "10:00am-10:50am", location: "Young CS24", units: "4.0", instructor: "Lavelle, L.", rating: "4.1", color: "#2f9e9e", final: "Wednesday, December 9 - 8am-11am" },
-  { subject: "Anthro", number: "7", title: "Human Evolution", status: "enrolled", statusText: "Enrolled Class Full (180)", days: "TR", time: "8:00am-9:15am", location: "Haines 220", units: "5.0", instructor: "Boyd, R.", rating: "3.3", color: "#a56a3f", final: "Tuesday, December 8 - 8am-11am" },
-  { subject: "Economics", number: "172", title: "Economic and Legal Issues for Startups", status: "closed", statusText: "Closed Class Full (36)", days: "MW", time: "3:30pm-4:45pm", location: "Bunche Hall 3153", units: "4.0", instructor: "Metzger, J.", rating: "N/A", color: "#9fc5e8", final: "Friday, December 11 - 3pm-6pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location", conflicts: ["EC ENGR M146", "EC ENGR C147A", "MGMT 108"] },
-  { subject: "Management", number: "108", title: "Business Law", status: "closed", statusText: "Closed Class Full (60)", days: "MW", time: "3:30pm-4:45pm", location: "Anderson C301", units: "4.0", instructor: "Kim, S.", rating: "3.9", color: "#cc0000", final: "Friday, December 11 - 3pm-6pm", conflicts: ["ECON 172"] },
-  { subject: "EC Engr", number: "M146", title: "Introduction to Machine Learning", status: "closed", statusText: "Closed Class Full (90)", days: "MW", time: "4:00pm-5:50pm", location: "Boelter 5249", units: "4.0", instructor: "Chang, K.W.", rating: "4.0", color: "#674ea7", final: "Monday, December 7 - 3pm-6pm", conflicts: ["ECON 172"] },
-  { subject: "Ling", number: "20", title: "Introduction to Linguistic Analysis", status: "open", statusText: "Open: 18 of 60 Left", days: "TR", time: "5:00pm-6:15pm", location: "Bunche 3164", units: "4.0", instructor: "Hyams, N.", rating: "4.6", color: "#38761d", final: "Thursday, December 10 - 6:30pm-9:30pm" }
+  { subject: "French", number: "1", title: "Elementary French", status: "closed", statusText: "Closed Class Full (28)", days: "TR", time: "9:30am-10:45am", location: "Online", units: "4.0", instructor: "Von Zur Muehlen, E<br>Rushing, R.A.", rating: "N/A", color: "#e8262b", final: "Consult instructor for method of evaluation" },
+  { subject: "Statistics", number: "C161", title: "Introduction to Machine Learning and Artificial Intelligence", status: "open", statusText: "Open: 12 of 150 Left", days: "MW", time: "10:00am-11:15am", location: "Franz Hall 1178", units: "4.0", instructor: "Wu, Y.N.", rating: "4.2", color: "#7b2d8e", final: "Monday December 7, 2026 8am-11am", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location", conflicts: ["STATS 100A"] },
+  { subject: "Com Sci", number: "35L", title: "Software Construction", status: "closed", statusText: "Closed Class Full (120)", days: "MW", time: "2:00pm-3:50pm", location: "Boelter Hall 3400", units: "3.0", instructor: "Eggert, P.R.", rating: "3.4", color: "#2b7fb8", final: "Wednesday, December 9 - 3pm-6pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location" },
+  { subject: "Ling", number: "1", title: "Introduction to Study of Language", status: "open", statusText: "Open: 40 of 250 Left", days: "TR", time: "11:00am-12:15pm", location: "Haines Hall 39", units: "5.0", instructor: "Sportiche, D.", rating: "4.8", color: "#3f9c5b", final: "Thursday December 10, 2026 8am-11am", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location" },
+  { subject: "Math", number: "33B", title: "Differential Equations", status: "waitlist", statusText: "Waitlist: 3 of 10 Taken", days: "MWF", time: "9:00am-9:50am", location: "MS 5117", units: "4.0", instructor: "Liu, C.", rating: "3.1", color: "#d98f2a", final: "Friday, December 11 - 8am-11am", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location", conflicts: ["PHYSICS 1B"] },
+  { subject: "Physics", number: "1B", title: "Physics for Scientists and Engineers: Oscillations", status: "open", statusText: "Open: 8 of 200 Left", days: "MWF", time: "9:00am-9:50am", location: "Young CS50", units: "5.0", instructor: "Arisaka, K.", rating: "2.9", color: "#8c8c8c", final: "Friday December 11, 2026 8am-11am", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location", conflicts: ["MATH 33B"] },
+  { subject: "Psych", number: "10", title: "Introductory Psychology", status: "closed", statusText: "Closed Class Full (400)", days: "TR", time: "2:00pm-3:15pm", location: "Fowler A103B", units: "4.0", instructor: "Fried, I.", rating: "4.4", color: "#c45ca0", final: "Tuesday, December 8 - 3pm-6pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location" },
+  { subject: "Econ", number: "11", title: "Microeconomic Theory", status: "enrolled", statusText: "Enrolled Class Full (250)", days: "MW", time: "12:30pm-1:45pm", location: "Rolfe 1200", units: "4.0", instructor: "Buchholz, T.", rating: "3.8", color: "#4a6fb5", final: "Monday December 7, 2026 11:30am-2:30pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location" },
+  { subject: "Art", number: "10", title: "Drawing and Color", status: "open", statusText: "Open: 2 of 20 Left", days: "F", time: "1:00pm-3:50pm", location: "Broad 2160E", units: "4.0", instructor: "Ryman, W.", rating: "4.9", color: "#e0b93f", final: "Consult instructor for method of evaluation" },
+  { subject: "Hist", number: "1C", title: "Introduction to Western Civilization", status: "open", statusText: "Open: 55 of 120 Left", days: "TR", time: "3:30pm-4:45pm", location: "Dodd 147", units: "5.0", instructor: "Sabean, D.", rating: "3.6", color: "#6ba43a", final: "Thursday, December 10 - 3pm-6pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location" },
+  { subject: "Chem", number: "14B", title: "Thermodynamics and Electrochemistry", status: "waitlist", statusText: "Waitlist: 12 of 15 Taken", days: "MWF", time: "10:00am-10:50am", location: "Young CS24", units: "4.0", instructor: "Lavelle, L.", rating: "4.1", color: "#2f9e9e", final: "Wednesday December 9, 2026 8am-11am", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location" },
+  { subject: "Anthro", number: "7", title: "Human Evolution", status: "enrolled", statusText: "Enrolled Class Full (180)", days: "TR", time: "8:00am-9:15am", location: "Haines 220", units: "5.0", instructor: "Boyd, R.", rating: "3.3", color: "#a56a3f", final: "Tuesday, December 8 - 8am-11am", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location" },
+  { subject: "Economics", number: "172", title: "Economic and Legal Issues for Startups", status: "closed", statusText: "Closed Class Full (36)", days: "MW", time: "3:30pm-4:45pm", location: "Bunche Hall 3153", units: "4.0", instructor: "Metzger, J.", rating: "N/A", color: "#9fc5e8", final: "Friday, December 11 - 3pm-6pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location", conflicts: ["EC ENGR M146", "EC ENGR C147A", "MGMT 108"] },
+  { subject: "Management", number: "108", title: "Business Law", status: "closed", statusText: "Closed Class Full (60)", days: "MW", time: "3:30pm-4:45pm", location: "Anderson C301", units: "4.0", instructor: "Kim, S.", rating: "3.9", color: "#cc0000", final: "Friday December 11, 2026 3pm-6pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location", conflicts: ["ECON 172"] },
+  { subject: "EC Engr", number: "M146", title: "Introduction to Machine Learning", status: "closed", statusText: "Closed Class Full (90)", days: "MW", time: "4:00pm-5:50pm", location: "Boelter 5249", units: "4.0", instructor: "Chang, K.W.", rating: "4.0", color: "#674ea7", final: "Monday December 7, 2026 3pm-6pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location", conflicts: ["ECON 172"] },
+  { subject: "Ling", number: "20", title: "Introduction to Linguistic Analysis", status: "open", statusText: "Open: 18 of 60 Left", days: "TR", time: "5:00pm-6:15pm", location: "Bunche 3164", units: "4.0", instructor: "Hyams, N.", rating: "4.6", color: "#38761d", final: "Thursday, December 10 - 6:30pm-9:30pm", finalNote: "Check back on 11/23/2026 (Monday of 9th week) for final exam location" }
 ];
 
 const STATUS_ICON = {
@@ -63,9 +63,11 @@ function card(course, index, total) {
   const id = classId(index);
   const first = index === 0;
   const last = index === total - 1;
-  const finalNote = course.finalNote
-    ? `<div class="final_exam_note">${course.finalNote}</div>`
-    : "";
+  // The live page puts the exam line and the location advisory in one
+  // inline-block span separated by a bare `<br>`, so `textContent` runs them
+  // together: "8am-11amCheck back on ...". Keep that shape here or a parser
+  // written against this fixture will not survive the real page.
+  const finalNote = course.finalNote || "";
   return `
   <tbody class="Class${id} courseItem itemClass${first ? " firstClass" : ""}">
     <tr>
@@ -75,7 +77,6 @@ function card(course, index, total) {
       </td>
       <td class="linkPanelRight" rowspan="2">
         <div class="OrderingButtons">
-          <span class="colorswatch" style="background:${course.color}"></span>
           <button id="muClass${id}" class="link moveupClass"
             title="Move this Class up in the list" aria-label="Move this Class up in the list"
             onclick="${command("up", id)}"
@@ -89,10 +90,7 @@ function card(course, index, total) {
     </tr>
     <tr>
       <td>
-        <div class="final_exam_info exam_conflict">
-          <strong>Final Exam:</strong> ${course.final} ${conflictPopover(course.conflicts)}
-          ${finalNote}
-        </div>
+        <div class="final_exam_info exam_conflict"><span style="font-weight: bold; ">Final Exam:</span> <span style="display: inline-block; vertical-align: top;">${course.final}<br>${finalNote}</span>${conflictPopover(course.conflicts)}</div>
       </td>
     </tr>
     <tr>
@@ -118,6 +116,27 @@ function card(course, index, total) {
     </tr>
   </tbody>
   <tbody class="course_divider"><tr><td colspan="2">&nbsp;</td></tr></tbody>`;
+}
+
+/**
+ * MyUCLA's row of display switches above the grid. Modelled on the live page:
+ * the state lives in classes on the container, and each "checkbox" is really
+ * two absolutely positioned buttons, `icon-check` over `icon-check-empty`.
+ * See `docs/MYUCLA_CONTRACT.md`. The postbacks are inert here.
+ */
+function sectionMenu() {
+  const toggle = (name, label, help) => `<span id="${name}ShowHide">
+      <span> <button id="tip-${name}" onclick="return false;" class="uit-clickover-bottom link" data-content="${help}" style="cursor: pointer;">${label}</button>:</span>
+      <span style="padding-left:5px; padding-right: 1.5em; position: relative;" class="show${name} icontoggle gridsizeicons">
+        <button id="${name}Uncheck" aria-label="unchecked ${label}" style="position: absolute;" class="link ${name}Uncheck" onclick="return false;"><span class="icon-check-empty"></span></button>
+        <button id="${name}Check" aria-label="checked ${label}" style="position: absolute;" class="link ${name}Check" onclick="return false;"><span class="icon-check"></span></button>
+      </span>
+    </span>`;
+  return `<div class="classPlanner_SectionMenu plannerMenuLinks checkboxStateHolder studylistChecked planChecked">
+    ${toggle("studylist", "Study List", "enrolled/waitlisted classes appear with a double border")}
+    ${toggle("plan", "Plan", "Planned classes appear with a solid border")}
+    ${toggle("alternates", "Alternates", "Alternates appear with a dashed border")}
+  </div>`;
 }
 
 export function fixtureHtml(count = COURSES.length) {
@@ -151,13 +170,14 @@ export function fixtureHtml(count = COURSES.length) {
   .icon-arrow-up::before { content:"↑"; }
   .icon-arrow-down::before { content:"↓"; }
   .icon-warning-sign::before { content:"⚠"; }
+  .icon-check::before { content:"☑"; }
+  .icon-check-empty::before { content:"☐"; }
   .icon-lock::before { content:"🔒"; }
   .icon-unlock::before { content:"🔓"; }
   .icon-ok-sign::before { content:"✓"; }
   .icon-info-sign::before { content:"ℹ"; }
   .icon-pencil::before { content:"✎"; }
   .icon-minus-sign::before { content:"⊖"; }
-  .colorswatch { display:inline-block; width:44px; height:22px; border:1px solid #767676; border-radius:2px; }
   .OrderingButtons button.link { border:0; background:none; padding:0; color:#204e91; font-size:17px; cursor:pointer; }
   .final_exam_info { padding:2px 8px 6px; border-left:3px solid #d6d6d6; margin-left:2px; }
   .final_exam_note { padding-left:76px; }
@@ -191,12 +211,12 @@ export function fixtureHtml(count = COURSES.length) {
       </select>
     </label>
     <input id="ctl00_MainContent_planIDField" type="hidden" value="1234567" />
-    <div id="ctl00_MainContent_panelGrid"><div id="gridDiv" class="sgChecked">
+    <div id="ctl00_MainContent_panelGrid">${sectionMenu()}<div id="gridDiv" class="sgChecked">
       <div class="hourbox">8<sup>AM</sup></div>
       <div class="timebox">
-        <div class="planneritembox" style="top:0px;height:48px;left:0;width:120px;background:#ecf8f9">ENGR 216<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span><span class="icon-warning-sign planConflict"></span>Physics and Astronomy Building 1425</div>
-        <div class="planneritembox" style="top:60px;height:86px;left:0;width:120px;background:#f6ecf9">MCD BIO 60<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span>Bunche Hall 3153</div>
-        <div class="planneritembox smallitem" style="top:150px;height:34px;left:0;width:58px;background:#eef0fa">MGMT 170<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span>Entrepreneurs Hall C314</div>
+        <div class="planneritembox" style="background-color:#ecf8f9 !important;color:#0c5373;border:solid 1px #41b5eb;top:0px;height:48px;left:0;width:120px">ENGR 216<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span><span class="icon-warning-sign planConflict"></span>Physics and Astronomy Building 1425</div>
+        <div class="planneritembox" style="background-color:#f6ecf9 !important;color:#180877;border:double 3px #4a2ff1;top:60px;height:86px;left:0;width:120px">MCD BIO 60<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span>Bunche Hall 3153</div>
+        <div class="planneritembox smallitem" style="background-color:#eef0fa !important;color:#605f20;border:solid 1px #cecd6b;top:150px;height:34px;left:0;width:58px">MGMT 170<br class="hide-small"><span class="hide-above-small"> &middot; </span>Lec 1<br class="hide-small"><span class="hide-above-small"> &middot; </span>Entrepreneurs Hall C314</div>
       </div>
     </div></div>
     <div id="ctl00_MainContent_classPlanPanel">

@@ -67,6 +67,23 @@ export class MyUclaPlannerAdapter {
     return this.doc.querySelector<HTMLElement>(ROOT_SELECTOR);
   }
 
+  /**
+   * The calendar year the term's exams fall in, from MyUCLA's own term code:
+   * `26F` is Fall 2026 and its finals are in December 2026, `27W` is Winter
+   * 2027 and its finals are in March 2027. In every case the year is the one in
+   * the code.
+   *
+   * Only needed because one of MyUCLA's two final exam formats omits the year.
+   * Whatever this returns is checked again downstream against the weekday
+   * MyUCLA printed, so a wrong year leaves the exam unplaced rather than drawn
+   * on the wrong day.
+   */
+  getTermYear(): number | null {
+    const term = this.doc.querySelector<HTMLSelectElement>(TERM_SELECTOR)?.value || "";
+    const match = /^(\d{2})[A-Z]$/.exec(term);
+    return match ? 2000 + Number(match[1]) : null;
+  }
+
   getContextKey(): string {
     const term = this.doc.querySelector<HTMLSelectElement>(TERM_SELECTOR)?.value || "";
     const planId = this.doc.querySelector<HTMLInputElement>(PLAN_ID_SELECTOR)?.value || "";

@@ -8,6 +8,7 @@
  *   idle      first paint, nothing touched
  *   position  change one card's position control and screenshot the result
  *   top       press "move to top" on an off-screen card
+ *   finals    open the final exam week panel and read what it placed
  */
 
 import { mkdir, readFile } from "node:fs/promises";
@@ -152,7 +153,17 @@ if (scenario === "default" || scenario === "tidy") {
       visibleHeaderRows: [...document.querySelectorAll("table.coursetable tr")].filter(
         (r) => [...r.cells].every((c) => c.tagName === "TH") && r.getClientRects().length > 0
       ).length,
-      tidyGridBlocks: document.querySelectorAll('#gridDiv .planneritembox[data-pl-grid="tidy"]').length
+      tidyGridBlocks: document.querySelectorAll('#gridDiv .planneritembox[data-pl-grid="tidy"]').length,
+      finalsToggle: (() => {
+        const t = document.getElementById('planner-lift-finals-toggle');
+        if (!t) return null;
+        return {
+          inNativeRow: Boolean(t.closest('.classPlanner_SectionMenu')),
+          after: t.previousElementSibling?.id ?? null,
+          label: (t.textContent || '').replace(/\s+/g, ' ').trim(),
+          checked: t.querySelector('.icon-check') ? 'on' : 'off'
+        };
+      })()
     }))
   );
 }
@@ -209,6 +220,61 @@ if (scenario === "drag") {
   );
   await shot("after");
   console.log({ startScroll, scrollWhileHeld: held, scrolledBy: held - startScroll, fromIndex: grip.index, landedIndex: landed });
+}
+
+if (scenario === "tidy") {
+  // The switch only exists with the layout switch on, and it is ours: it opens
+  // a panel on this page and sends nothing.
+  const before = await page.evaluate(() => ({
+    requests: 0,
+    panel: Boolean(document.querySelector("[data-pl-finals]"))
+  }));
+  let posted = 0;
+  page.on("request", () => (posted += 1));
+  await page.click("#planner-lift-finals-toggle button");
+  await page.waitForTimeout(600);
+  console.log({
+    before,
+    afterClick: await page.evaluate(() => ({
+      panel: Boolean(document.querySelector("[data-pl-finals]")),
+      checked: document.querySelector("#planner-lift-finals-toggle .icon-check") ? "on" : "off",
+      exams: document.querySelectorAll(".pl-finals-block").length
+    })),
+    requestsMade: posted
+  });
+  await shot("finals-toggle");
+}
+
+if (scenario === "finals") {
+  await page.click('[data-pl-action="menu"]');
+  await page.waitForTimeout(150);
+  await page.click('[data-pl-action="finals"]');
+  await page.waitForTimeout(500);
+
+  const panel = await page.$("[data-pl-finals]");
+  if (!panel) throw new Error("The finals panel did not open.");
+  await panel.screenshot({ path: resolve(outDir, "finals-panel.png") });
+  console.log("screenshot", resolve(outDir, "finals-panel.png"));
+
+  console.log(
+    await page.evaluate(() => {
+      const root = document.querySelector("[data-pl-finals]");
+      const text = (node) => (node?.textContent || "").replace(/\s+/g, " ").trim();
+      return {
+        days: [...root.querySelectorAll(".pl-finals-day")].map(text),
+        slots: [...root.querySelectorAll(".pl-finals-slot")].map(text),
+        placed: [...root.querySelectorAll(".pl-finals-block .pl-finals-code")].map(text),
+        tight: [...root.querySelectorAll(".pl-finals-tight")].map(text),
+        clash: [...root.querySelectorAll(".pl-finals-clash-note")].map(text),
+        enrolled: [...root.querySelectorAll(".pl-finals-enrolled")].map((n) => text(n.querySelector(".pl-finals-code"))),
+        unplaced: [...root.querySelectorAll(".pl-finals-rest-item")].map(text),
+        // The page must not scroll sideways because of us.
+        bodyOverflows: document.body.scrollWidth > document.documentElement.clientWidth
+      };
+    })
+  );
+
+  await shot("page");
 }
 
 await browser.close();
